@@ -3,8 +3,9 @@
 import { promises as fs } from 'fs';
 import { join } from 'path';
 
-const SCHEMA_DIR = './typesrc';
-const OUTPUT_DIR = './src/types';
+// Default directories - can be overridden in generateTypes()
+const DEFAULT_SCHEMA_DIRS = ['./typesrc'];
+const DEFAULT_OUTPUT_DIR = './src/types';
 const FILE_HEADER = '// THIS FILE IS GENERATED - DO NOT EDIT DIRECTLY\n\n';
 
 // Simple logger implementation to replace missing './logger.js'
@@ -37,22 +38,35 @@ interface ImportTracker {
     referencePath: string[];
 }
 
-async function buildTypeRegistry(): Promise<TypeRegistry> {
+async function buildTypeRegistry(schemaDirs: string[]): Promise<TypeRegistry> {
     const registry: TypeRegistry = {};
-    const files = await fs.readdir(SCHEMA_DIR);
-    const jsonFiles = files.filter(f => f.endsWith('.json'));
+    
+    // Process all schema directories
+    for (const schemaDir of schemaDirs) {
+        try {
+            const files = await fs.readdir(schemaDir);
+            const jsonFiles = files.filter(f => f.endsWith('.json'));
 
-    for (const file of jsonFiles) {
-        const schemaPath = join(SCHEMA_DIR, file);
-        const schemaContent = await fs.readFile(schemaPath, 'utf-8');
-        const schema: JSONSchema = JSON.parse(schemaContent);
+            for (const file of jsonFiles) {
+                const schemaPath = join(schemaDir, file);
+                const schemaContent = await fs.readFile(schemaPath, 'utf-8');
+                const schema: JSONSchema = JSON.parse(schemaContent);
 
-        // Register all top-level types from this file
-        for (const [name, typeSchema] of Object.entries(schema.properties || {})) {
-            registry[name] = {
-                sourceFile: file.replace('.json', ''),
-                schema: typeSchema
-            };
+                // Register all top-level types from this file
+                for (const [name, typeSchema] of Object.entries(schema.properties || {})) {
+                    // If type already exists, log a warning but allow override (later directories take precedence)
+                    if (registry[name]) {
+                        log(`Warning: Type "${name}" already exists, overriding with version from ${schemaPath}`);
+                    }
+                    registry[name] = {
+                        sourceFile: file.replace('.json', ''),
+                        schema: typeSchema
+                    };
+                }
+            }
+        } catch (err) {
+            // Skip directories that don't exist or can't be read
+            log(`Skipping schema directory ${schemaDir}: ${(err as Error).message}`);
         }
     }
 
@@ -195,7 +209,7 @@ function generateRuntimeSchemaExport(schema: JSONSchema): string {
     return output;
 }
 
-async function generateTypeFile(schemaPath: string, registry: TypeRegistry): Promise<void> {
+async function generateTypeFile(schemaPath: string, registry: TypeRegistry, outputDir: string): Promise<void> {
     log(`Generating types for schema: ${schemaPath}`);
     const schemaContent = await fs.readFile(schemaPath, 'utf-8');
     const schema: JSONSchema = JSON.parse(schemaContent);
@@ -307,12 +321,12 @@ async function generateTypeFile(schemaPath: string, registry: TypeRegistry): Pro
     // Write to output file
     // Get just the filename without path and convert to .types.ts
     const baseFileName = schemaPath.split(/[\/\\]/).pop()!.replace('.json', '.types.ts');
-    const fileName = join(OUTPUT_DIR, baseFileName);
+    const fileName = join(outputDir, baseFileName);
     await fs.writeFile(fileName, output);
     log(`Generated ${fileName}`);
 }
 
-async function generateIndexFile(files: string[]): Promise<void> {
+async function generateIndexFile(files: string[], outputDir: string): Promise<void> {
     let output = FILE_HEADER;
 
     // Add imports to trigger schema registration
@@ -330,36 +344,56 @@ async function generateIndexFile(files: string[]): Promise<void> {
         output += `export * from './${baseFileName}';\n`;
     });
 
-    await fs.writeFile(join(OUTPUT_DIR, 'index.ts'), output);
+    await fs.writeFile(join(outputDir, 'index.ts'), output);
     log('Generated index.ts');
 }
 
 /**
  * Generate TypeScript types from JSON schemas
- * @param schemaDir Directory containing JSON schema files
- * @param outputDir Directory to output generated TypeScript files
+ * @param schemaDirs Array of directories containing JSON schema files (default: ['./typesrc'])
+ * @param outputDir Directory to output generated TypeScript files (default: './src/types')
  */
 export async function generateTypes({
-    schemaDir = SCHEMA_DIR,
-    outputDir = OUTPUT_DIR
+    schemaDirs = DEFAULT_SCHEMA_DIRS,
+    outputDir = DEFAULT_OUTPUT_DIR
 } = {}): Promise<void> {
     try {
-        const files = await fs.readdir(schemaDir);
-        const jsonFiles = files.filter(f => f.endsWith('.json'));
+        log(`Generating types from schema directories: ${schemaDirs.join(', ')}`);
+        log(`Output directory: ${outputDir}`);
 
-        // First build the type registry
-        const registry = await buildTypeRegistry();
+        // First build the type registry from all schema directories
+        const registry = await buildTypeRegistry(schemaDirs);
 
         // make sure output directory exists
         await fs.mkdir(outputDir, { recursive: true });
 
-        // Then generate type files with cross-file reference support
-        for (const file of jsonFiles) {
-            await generateTypeFile(join(schemaDir, file), registry);
+        // Collect all JSON files from all schema directories
+        const allJsonFiles: string[] = [];
+        const processedFiles = new Set<string>(); // Track processed filenames to avoid duplicates
+
+        for (const schemaDir of schemaDirs) {
+            try {
+                const files = await fs.readdir(schemaDir);
+                const jsonFiles = files.filter(f => f.endsWith('.json'));
+
+                // Generate type files with cross-file reference support
+                for (const file of jsonFiles) {
+                    const schemaPath = join(schemaDir, file);
+                    await generateTypeFile(schemaPath, registry, outputDir);
+                    
+                    // Track this filename for the index file (avoid duplicates)
+                    if (!processedFiles.has(file)) {
+                        allJsonFiles.push(file);
+                        processedFiles.add(file);
+                    }
+                }
+            } catch (err) {
+                log(`Skipping schema directory ${schemaDir}: ${(err as Error).message}`);
+            }
         }
 
-        // Generate index.ts
-        await generateIndexFile(jsonFiles);
+        // Generate index.ts with all processed files
+        await generateIndexFile(allJsonFiles, outputDir);
 
         log('Type generation complete!');
     } catch (err) {
@@ -370,8 +404,8 @@ export async function generateTypes({
 
 async function run() {
     await generateTypes({
-        schemaDir: SCHEMA_DIR,
-        outputDir: OUTPUT_DIR
+        schemaDirs: DEFAULT_SCHEMA_DIRS,
+        outputDir: DEFAULT_OUTPUT_DIR
     });
 }
 

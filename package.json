@@ -1,15 +1,41 @@
 {
-    "name": "tpwtypes",
+    "name": "@themeparks/typelib",
     "version": "1.0.0",
-    "main": "index.js",
+    "main": "./dist/index.js",
+    "module": "./dist/index.js",
+    "types": "./dist/index.d.ts",
     "type": "module",
-    "description": "TypeScript definitions for TPW API",
+    "description": "TypeScript definitions for ThemeParks.wiki API",
+    "keywords": ["typescript", "types", "api", "schema", "generation"],
+    "exports": {
+        ".": {
+            "types": "./dist/index.d.ts",
+            "import": "./dist/index.js",
+            "require": "./dist/index.js"
+        },
+        "./generate": {
+            "types": "./dist/generate_types.d.ts",
+            "import": "./dist/generate_types.js",
+            "require": "./dist/generate_types.js"
+        }
+    },
+    "files": [
+        "dist/**/*",
+        "typesrc/**/*",
+        "README.md"
+    ],
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
         "generate:types": "npx tsx ./src/generate_types.ts",
-        "build": "npm run generate:types && tsc"
+        "build": "npm run generate:types && tsc",
+        "prepublishOnly": "npm run build"
     },
     "devDependencies": {
-        "@types/node": "^24.5.2"
+        "@types/node": "^24.5.2",
+        "tsx": "^4.7.1",
+        "typescript": "^5.0.0"
+    },
+    "engines": {
+        "node": ">=24.0.0"
     }
 }
