@@ -26,7 +26,7 @@
     ],
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
-        "generate:types": "npx tsx ./src/generate_types.ts",
+        "generate:types": "npx tsx ./src/run_generate_types.ts",
         "build": "npm run generate:types && tsc",
         "prepublishOnly": "npm run build"
     },

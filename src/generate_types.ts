@@ -40,7 +40,7 @@ interface ImportTracker {
 
 async function buildTypeRegistry(schemaDirs: string[]): Promise<TypeRegistry> {
     const registry: TypeRegistry = {};
-    
+
     // Process all schema directories
     for (const schemaDir of schemaDirs) {
         try {
@@ -188,10 +188,10 @@ function getTypeFromSchema(schema: JSONSchema, rootSchema: JSONSchema, registry:
     }
 }
 
-function generateRuntimeSchemaExport(schema: JSONSchema): string {
+function generateRuntimeSchemaExport(schema: JSONSchema, typeRegistryImport: string): string {
     // Generate the runtime schema registration code
     let output = '\n// Runtime Schema Registration\n';
-    output += 'import { registerTypeSchema } from "../type_register.js";\n\n';
+    output += `import { registerTypeSchema } from "${typeRegistryImport}";\n\n`;
 
     // For each top-level type, register its schema
     for (const [name, typeSchema] of Object.entries(schema.properties || {})) {
@@ -209,7 +209,7 @@ function generateRuntimeSchemaExport(schema: JSONSchema): string {
     return output;
 }
 
-async function generateTypeFile(schemaPath: string, registry: TypeRegistry, outputDir: string): Promise<void> {
+async function generateTypeFile(schemaPath: string, registry: TypeRegistry, outputDir: string, typeRegistryImport: string): Promise<void> {
     log(`Generating types for schema: ${schemaPath}`);
     const schemaContent = await fs.readFile(schemaPath, 'utf-8');
     const schema: JSONSchema = JSON.parse(schemaContent);
@@ -316,7 +316,7 @@ async function generateTypeFile(schemaPath: string, registry: TypeRegistry, outp
         output = output.replace(FILE_HEADER, FILE_HEADER + imports.join('\n') + '\n\n');
     }
 
-    output += generateRuntimeSchemaExport(schema);
+    output += generateRuntimeSchemaExport(schema, typeRegistryImport);
 
     // Write to output file
     // Get just the filename without path and convert to .types.ts
@@ -352,10 +352,12 @@ async function generateIndexFile(files: string[], outputDir: string): Promise<vo
  * Generate TypeScript types from JSON schemas
  * @param schemaDirs Array of directories containing JSON schema files (default: ['./typesrc'])
  * @param outputDir Directory to output generated TypeScript files (default: './src/types')
+ * @param typeRegistryImport Import path for the type registry (default: '@themeparks/typelib')
  */
 export async function generateTypes({
     schemaDirs = DEFAULT_SCHEMA_DIRS,
-    outputDir = DEFAULT_OUTPUT_DIR
+    outputDir = DEFAULT_OUTPUT_DIR,
+    typeRegistryImport = "@themeparks/typelib"
 } = {}): Promise<void> {
     try {
         log(`Generating types from schema directories: ${schemaDirs.join(', ')}`);
@@ -379,8 +381,8 @@ export async function generateTypes({
                 // Generate type files with cross-file reference support
                 for (const file of jsonFiles) {
                     const schemaPath = join(schemaDir, file);
-                    await generateTypeFile(schemaPath, registry, outputDir);
-                    
+                    await generateTypeFile(schemaPath, registry, outputDir, typeRegistryImport);
+
                     // Track this filename for the index file (avoid duplicates)
                     if (!processedFiles.has(file)) {
                         allJsonFiles.push(file);
@@ -401,12 +403,3 @@ export async function generateTypes({
         process.exit(1);
     }
 }
-
-async function run() {
-    await generateTypes({
-        schemaDirs: DEFAULT_SCHEMA_DIRS,
-        outputDir: DEFAULT_OUTPUT_DIR
-    });
-}
-
-run();
