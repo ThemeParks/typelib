@@ -1,0 +1,111 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Entities",
+    "type": "object",
+    "properties": {
+        "EntityType": {
+            "type": "string",
+            "enum": [
+                "DESTINATION",
+                "PARK",
+                "ATTRACTION",
+                "RESTAURANT",
+                "SHOW",
+                "HOTEL"
+            ],
+            "description": "Possible types of entity in ThemeParks.wiki"
+        },
+        "EntityLocation": {
+            "type": "object",
+            "properties": {
+                "latitude": {
+                    "type": "number",
+                    "description": "Latitude coordinate of the entity location",
+                    "nullable": true
+                },
+                "longitude": {
+                    "type": "number",
+                    "description": "Longitude coordinate of the entity location",
+                    "nullable": true
+                }
+            }
+        },
+        "TagData": {
+            "type": "object",
+            "required": [
+                "tag",
+                "tagName"
+            ],
+            "properties": {
+                "tag": {
+                    "type": "string",
+                    "description": "Tag identifier"
+                },
+                "tagName": {
+                    "type": "string",
+                    "description": "Human readable tag name"
+                },
+                "id": {
+                    "type": "string",
+                    "description": "Unique identifier"
+                },
+                "value": {
+                    "description": "Tag value - can be string, number or object"
+                }
+            }
+        },
+        "Entity": {
+            "type": "object",
+            "required": [
+                "id",
+                "name",
+                "entityType",
+                "timezone"
+            ],
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "description": "Unique entity identifier"
+                },
+                "name": {
+                    "type": "string",
+                    "description": "Entity name"
+                },
+                "entityType": {
+                    "$ref": "#/properties/EntityType",
+                    "description": "Type of entity"
+                },
+                "parentId": {
+                    "type": "string",
+                    "nullable": true,
+                    "description": "Parent entity identifier, must always be set when entityType is not DESTINATION"
+                },
+                "destinationId": {
+                    "type": "string",
+                    "nullable": true,
+                    "description": "Destination identifier, must always be set when entityType is not DESTINATION"
+                },
+                "parkId": {
+                    "type": "string",
+                    "nullable": true,
+                    "description": "Park identifier, must be set if any parent entity in the hierarchy is a park"
+                },
+                "timezone": {
+                    "type": "string",
+                    "description": "Entity timezone"
+                },
+                "location": {
+                    "$ref": "#/properties/EntityLocation",
+                    "description": "Entity location coordinates"
+                },
+                "tags": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/properties/TagData"
+                    },
+                    "description": "Array of tags associated with the entity"
+                }
+            }
+        }
+    }
+}
