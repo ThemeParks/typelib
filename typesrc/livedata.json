@@ -1,0 +1,257 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "LiveData",
+    "type": "object",
+    "properties": {
+        "LiveStatusType": {
+            "type": "string",
+            "enum": [
+                "OPERATING",
+                "DOWN",
+                "CLOSED",
+                "REFURBISHMENT"
+            ],
+            "description": "Current operating status of an entity"
+        },
+        "ReturnTimeState": {
+            "type": "string",
+            "enum": [
+                "AVAILABLE",
+                "TEMP_FULL",
+                "FINISHED"
+            ],
+            "description": "State of return time availability"
+        },
+        "BoardingGroupState": {
+            "type": "string",
+            "enum": [
+                "AVAILABLE",
+                "PAUSED",
+                "CLOSED"
+            ],
+            "description": "State of boarding group availability"
+        },
+        "LiveQueue": {
+            "type": "object",
+            "properties": {
+                "STANDBY": {
+                    "type": "object",
+                    "properties": {
+                        "waitTime": {
+                            "type": "number",
+                            "description": "Current standby wait time in minutes"
+                        }
+                    },
+                    "description": "Standard queue type for most attractions. Wait in line for attraction, no additional cost."
+                },
+                "SINGLE_RIDER": {
+                    "type": "object",
+                    "required": [
+                        "waitTime"
+                    ],
+                    "properties": {
+                        "waitTime": {
+                            "type": "number",
+                            "nullable": true,
+                            "description": "Current single rider wait time in minutes"
+                        }
+                    },
+                    "description": "Single Rider queue type for attractions that offer it. Usually a shorter wait time, but you may be separated from your party. No additional cost."
+                },
+                "RETURN_TIME": {
+                    "type": "object",
+                    "required": [
+                        "state",
+                        "returnStart",
+                        "returnEnd"
+                    ],
+                    "properties": {
+                        "state": {
+                            "$ref": "#/properties/ReturnTimeState",
+                            "description": "State of return time availability"
+                        },
+                        "returnStart": {
+                            "type": "string",
+                            "format": "date-time",
+                            "nullable": true,
+                            "description": "Start time of return window"
+                        },
+                        "returnEnd": {
+                            "type": "string",
+                            "format": "date-time",
+                            "nullable": true,
+                            "description": "End time of return window"
+                        }
+                    },
+                    "description": "Return Time queue type for attractions that offer it. You get a return time to come back and ride the attraction later, instead of waiting in a physical line. No additional cost."
+                },
+                "PAID_RETURN_TIME": {
+                    "type": "object",
+                    "required": [
+                        "state",
+                        "returnStart",
+                        "returnEnd",
+                        "price"
+                    ],
+                    "properties": {
+                        "state": {
+                            "$ref": "#/properties/ReturnTimeState",
+                            "description": "State of return time availability"
+                        },
+                        "returnStart": {
+                            "type": "string",
+                            "format": "date-time",
+                            "nullable": true,
+                            "description": "Start time of return window"
+                        },
+                        "returnEnd": {
+                            "type": "string",
+                            "format": "date-time",
+                            "nullable": true,
+                            "description": "End time of return window"
+                        },
+                        "price": {
+                            "$ref": "#/properties/PriceData",
+                            "description": "Price information for paid return time"
+                        }
+                    },
+                    "description": "Paid Return Time queue type for attractions that offer it. You pay an additional cost to get a return time to come back and ride the attraction later, instead of waiting in a physical line."
+                },
+                "BOARDING_GROUP": {
+                    "type": "object",
+                    "required": [
+                        "allocationStatus",
+                        "currentGroupStart",
+                        "currentGroupEnd",
+                        "nextAllocationTime",
+                        "estimatedWait"
+                    ],
+                    "properties": {
+                        "allocationStatus": {
+                            "$ref": "#/properties/BoardingGroupState",
+                            "description": "State of boarding group availability"
+                        },
+                        "currentGroupStart": {
+                            "type": "number",
+                            "nullable": true,
+                            "description": "Current boarding group start number"
+                        },
+                        "currentGroupEnd": {
+                            "type": "number",
+                            "nullable": true,
+                            "description": "Current boarding group end number"
+                        },
+                        "nextAllocationTime": {
+                            "type": "string",
+                            "format": "date-time",
+                            "nullable": true,
+                            "description": "Next boarding group allocation time"
+                        },
+                        "estimatedWait": {
+                            "type": "number",
+                            "nullable": true,
+                            "description": "Estimated wait time in minutes"
+                        }
+                    },
+                    "description": "Boarding Group queue type for attractions that offer it. You get allocated a boarding group number and wait until your group is called. No additional cost."
+                },
+                "PAID_STANDBY": {
+                    "type": "object",
+                    "required": [
+                        "waitTime"
+                    ],
+                    "properties": {
+                        "waitTime": {
+                            "type": "number",
+                            "nullable": true,
+                            "description": "Current paid standby wait time in minutes"
+                        }
+                    },
+                    "description": "Paid Standby queue type for attractions that offer it. You pay an additional cost to use a separate standby line, usually with a shorter wait time."
+                }
+            }
+        },
+        "LiveTimeSlot": {
+            "type": "object",
+            "required": [
+                "type"
+            ],
+            "properties": {
+                "type": {
+                    "type": "string",
+                    "description": "Type of time entry"
+                },
+                "startTime": {
+                    "type": "string",
+                    "format": "date-time",
+                    "nullable": true,
+                    "description": "Start time"
+                },
+                "endTime": {
+                    "type": "string",
+                    "format": "date-time",
+                    "nullable": true,
+                    "description": "End time"
+                }
+            },
+            "description": "Time entry for shows or attraction operating hours"
+        },
+        "DiningAvailability": {
+            "type": "object",
+            "properties": {
+                "partySize": {
+                    "type": "number",
+                    "nullable": true,
+                    "description": "Available party size"
+                },
+                "waitTime": {
+                    "type": "number",
+                    "nullable": true,
+                    "description": "Current wait time in minutes"
+                }
+            },
+            "description": "Dining availability information for restaurants"
+        },
+        "LiveData": {
+            "type": "object",
+            "required": [
+                "id"
+            ],
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "description": "Entity identifier"
+                },
+                "status": {
+                    "$ref": "#/properties/LiveStatusType",
+                    "description": "Current operating status of the entity"
+                },
+                "queue": {
+                    "$ref": "#/properties/LiveQueue",
+                    "description": "Current queue information for entities with queues (e.g. attractions)"
+                },
+                "showtimes": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/properties/LiveTimeSlot"
+                    },
+                    "description": "Array of showtime entries for entities that have scheduled showtimes (e.g. shows)"
+                },
+                "operatingHours": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/properties/LiveTimeSlot"
+                    },
+                    "description": "Array of operating hours entries for entities that have specific operating hours (e.g. parks, restaurants)"
+                },
+                "diningAvailability": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/properties/DiningAvailability"
+                    },
+                    "description": "Array of dining availability entries for entities that have dining options (e.g. restaurants)"
+                }
+            }
+        }
+    }
+}

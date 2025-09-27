@@ -1,0 +1,38 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "PriceData",
+    "type": "object",
+    "properties": {
+        "CurrencyTypes": {
+            "type": "string",
+            "enum": [
+                "USD",
+                "EUR",
+                "GBP",
+                "JPY"
+            ],
+            "description": "Currently supported currency codes by ThemeParks.wiki"
+        },
+        "PriceData": {
+            "type": "object",
+            "required": [
+                "amount",
+                "currency"
+            ],
+            "properties": {
+                "amount": {
+                    "type": "number",
+                    "description": "Numerical price amount. Always in the lowest denomination (e.g. cents for USD)"
+                },
+                "currency": {
+                    "$ref": "#/properties/CurrencyTypes",
+                    "description": "Currency code"
+                },
+                "formatted": {
+                    "type": "string",
+                    "description": "Formatted price string in human-readable format. E.g. $12.00"
+                }
+            }
+        }
+    }
+}
