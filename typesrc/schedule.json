@@ -1,0 +1,77 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Schedule",
+    "type": "object",
+    "properties": {
+        "ScheduleType": {
+            "type": "string",
+            "enum": [
+                "OPERATING",
+                "TICKETED_EVENT",
+                "PRIVATE_EVENT",
+                "EXTRA_HOURS",
+                "INFO"
+            ],
+            "description": "Types of schedule entries for parks"
+        },
+        "ScheduleEntry": {
+            "type": "object",
+            "required": [
+                "date",
+                "type",
+                "openingTime",
+                "closingTime"
+            ],
+            "properties": {
+                "date": {
+                    "type": "string",
+                    "description": "The date of the schedule entry, YYYY-MM-DD format",
+                    "format": "date",
+                    "example": "1992-04-12"
+                },
+                "type": {
+                    "$ref": "#/properties/ScheduleType",
+                    "description": "Type of schedule entry e.g. OPERATING, EXTRA_HOURS, etc."
+                },
+                "description": {
+                    "type": "string",
+                    "description": "Optional description of the schedule entry"
+                },
+                "openingTime": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "Opening time for this schedule entry",
+                    "example": "1992-04-12T09:00:00-07:00"
+                },
+                "closingTime": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "Closing time for this schedule entry",
+                    "example": "1992-04-12T17:00:00-07:00"
+                }
+            },
+            "description": "Represents a single schedule entry"
+        },
+        "EntitySchedule": {
+            "type": "object",
+            "required": [
+                "id",
+                "schedule"
+            ],
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "description": "Identifier of the park entity this schedule belongs to"
+                },
+                "schedule": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/properties/ScheduleEntry"
+                    },
+                    "description": "Array of schedule entries for the park"
+                }
+            },
+            "description": "Represents the schedule for a specific park entity"
+        }
+    }
+}
