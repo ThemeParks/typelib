@@ -32,6 +32,41 @@ export function StringToEntityType(value: string): EntityTypeEnum {
     throw new Error('Unknown EntityType value: ' + value);
 }
 
+export enum AttractionTypeEnum {
+    "UNKNOWN" = 'UNKNOWN',
+    "RIDE" = 'RIDE',
+    "SHOW" = 'SHOW',
+    "TRANSPORT" = 'TRANSPORT',
+    "PARADE" = 'PARADE',
+    "MEET_AND_GREET" = 'MEET_AND_GREET',
+    "OTHER" = 'OTHER',
+}
+
+/** Possible types of attraction in ThemeParks.wiki */
+export type AttractionType = keyof typeof AttractionTypeEnum;
+
+// Function to convert string to AttractionTypeEnum
+export function StringToAttractionType(value: string): AttractionTypeEnum {
+    const lowerValue = value.toLowerCase();
+    switch (lowerValue) {
+        case 'unknown':
+            return AttractionTypeEnum.UNKNOWN;
+        case 'ride':
+            return AttractionTypeEnum.RIDE;
+        case 'show':
+            return AttractionTypeEnum.SHOW;
+        case 'transport':
+            return AttractionTypeEnum.TRANSPORT;
+        case 'parade':
+            return AttractionTypeEnum.PARADE;
+        case 'meet_and_greet':
+            return AttractionTypeEnum.MEET_AND_GREET;
+        case 'other':
+            return AttractionTypeEnum.OTHER;
+    }
+    throw new Error('Unknown AttractionType value: ' + value);
+}
+
 export type EntityLocation = {
     
     /** Latitude coordinate of the entity location */
@@ -101,6 +136,20 @@ registerTypeSchema("EntityType", {
     "HOTEL"
   ],
   "description": "Possible types of entity in ThemeParks.wiki"
+});
+
+registerTypeSchema("AttractionType", {
+  "type": "string",
+  "enum": [
+    "UNKNOWN",
+    "RIDE",
+    "SHOW",
+    "TRANSPORT",
+    "PARADE",
+    "MEET_AND_GREET",
+    "OTHER"
+  ],
+  "description": "Possible types of attraction in ThemeParks.wiki"
 });
 
 registerTypeSchema("EntityLocation", {

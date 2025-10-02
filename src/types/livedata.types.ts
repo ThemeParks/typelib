@@ -74,6 +74,38 @@ export function StringToBoardingGroupState(value: string): BoardingGroupStateEnu
     throw new Error('Unknown BoardingGroupState value: ' + value);
 }
 
+export enum QueueTypeEnum {
+    "STANDBY" = 'STANDBY',
+    "SINGLE_RIDER" = 'SINGLE_RIDER',
+    "RETURN_TIME" = 'RETURN_TIME',
+    "PAID_RETURN_TIME" = 'PAID_RETURN_TIME',
+    "BOARDING_GROUP" = 'BOARDING_GROUP',
+    "PAID_STANDBY" = 'PAID_STANDBY',
+}
+
+/** Types of queues that an attraction may have */
+export type QueueType = keyof typeof QueueTypeEnum;
+
+// Function to convert string to QueueTypeEnum
+export function StringToQueueType(value: string): QueueTypeEnum {
+    const lowerValue = value.toLowerCase();
+    switch (lowerValue) {
+        case 'standby':
+            return QueueTypeEnum.STANDBY;
+        case 'single_rider':
+            return QueueTypeEnum.SINGLE_RIDER;
+        case 'return_time':
+            return QueueTypeEnum.RETURN_TIME;
+        case 'paid_return_time':
+            return QueueTypeEnum.PAID_RETURN_TIME;
+        case 'boarding_group':
+            return QueueTypeEnum.BOARDING_GROUP;
+        case 'paid_standby':
+            return QueueTypeEnum.PAID_STANDBY;
+    }
+    throw new Error('Unknown QueueType value: ' + value);
+}
+
 export type LiveQueue = {
     
     /** Standard queue type for most attractions. Wait in line for attraction, no additional cost. */
@@ -223,6 +255,19 @@ registerTypeSchema("BoardingGroupState", {
     "CLOSED"
   ],
   "description": "State of boarding group availability"
+});
+
+registerTypeSchema("QueueType", {
+  "type": "string",
+  "enum": [
+    "STANDBY",
+    "SINGLE_RIDER",
+    "RETURN_TIME",
+    "PAID_RETURN_TIME",
+    "BOARDING_GROUP",
+    "PAID_STANDBY"
+  ],
+  "description": "Types of queues that an attraction may have"
 });
 
 registerTypeSchema("LiveQueue", {
