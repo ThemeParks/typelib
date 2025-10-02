@@ -31,6 +31,18 @@
             ],
             "description": "State of boarding group availability"
         },
+        "QueueType": {
+            "type": "string",
+            "enum": [
+                "STANDBY",
+                "SINGLE_RIDER",
+                "RETURN_TIME",
+                "PAID_RETURN_TIME",
+                "BOARDING_GROUP",
+                "PAID_STANDBY"
+            ],
+            "description": "Types of queues that an attraction may have"
+        },
         "LiveQueue": {
             "type": "object",
             "properties": {
