@@ -187,7 +187,10 @@ function getTypeFromSchema(schema: JSONSchema, rootSchema: JSONSchema, registry:
                     valueType = getTypeFromSchema(schema.additionalProperties, rootSchema, registry, tracker);
                 }
 
-                const recordType = `Record<${keyType}, ${valueType}>`;
+                // Use Partial for propertyNames constraints to allow partial translations
+                const recordType = schema.propertyNames?.$ref
+                    ? `Partial<Record<${keyType}, ${valueType}>>`
+                    : `Record<${keyType}, ${valueType}>`;
                 if (typeName) {
                     return `extends ${recordType} {}`;
                 }

@@ -48,7 +48,7 @@ export function StringToLanguageCode(value: string): LanguageCodeEnum {
 }
 
 /** A string with multiple language translations */
-export interface MultilangString extends Record<LanguageCode, string> {}
+export interface MultilangString extends Partial<Record<LanguageCode, string>> {}
 
 /** A string that may be localised or a simple string */
 export type LocalisedString = MultilangString | string;
