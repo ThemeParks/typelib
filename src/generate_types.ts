@@ -129,6 +129,15 @@ function getTypeFromSchema(schema: JSONSchema, rootSchema: JSONSchema, registry:
         return schema.enum.map(value => `'${value}'`).join(' | ');
     }
 
+    if (schema.oneOf || schema.anyOf) {
+        // Handle oneOf/anyOf - create union type
+        const variants = schema.oneOf || schema.anyOf;
+        if (variants && Array.isArray(variants)) {
+            const types = variants.map(variant => getTypeFromSchema(variant, rootSchema, registry, tracker));
+            return types.join(' | ');
+        }
+    }
+
     if (schema.$ref) {
         try {
             const resolved = resolveReference(schema.$ref, rootSchema, registry, tracker);
@@ -165,7 +174,20 @@ function getTypeFromSchema(schema: JSONSchema, rootSchema: JSONSchema, registry:
         }
         case 'object': {
             if (!schema.properties) {
-                const recordType = `Record<string, any>`;
+                // Check if propertyNames constraint exists
+                let keyType = 'string';
+                if (schema.propertyNames?.$ref) {
+                    const resolved = resolveReference(schema.propertyNames.$ref, rootSchema, registry, tracker);
+                    keyType = resolved.typeName;
+                }
+
+                // Check if additionalProperties has a type constraint
+                let valueType = 'any';
+                if (schema.additionalProperties && typeof schema.additionalProperties === 'object') {
+                    valueType = getTypeFromSchema(schema.additionalProperties, rootSchema, registry, tracker);
+                }
+
+                const recordType = `Record<${keyType}, ${valueType}>`;
                 if (typeName) {
                     return `extends ${recordType} {}`;
                 }
@@ -242,7 +264,11 @@ async function generateTypeFile(schemaPath: string, registry: TypeRegistry, outp
             }
         }
 
-        if (typeSchema.enum && Array.isArray(typeSchema.enum)) {
+        if (typeSchema.oneOf || typeSchema.anyOf) {
+            // Handle oneOf/anyOf - create type alias with union
+            const typeStr = getTypeFromSchema(typeSchema, schema, registry, tracker);
+            output += `${description}export type ${name} = ${typeStr};\n\n`;
+        } else if (typeSchema.enum && Array.isArray(typeSchema.enum)) {
             // generate a native enum for enum types
             output += `export enum ${name}Enum {\n`;
             typeSchema.enum.forEach((value: string) => {
@@ -261,8 +287,8 @@ async function generateTypeFile(schemaPath: string, registry: TypeRegistry, outp
             typeSchema.enum.forEach((value: string) => {
                 if (value) {
                     output += `        case '${value.toLowerCase()}':\n`;
-                    if (value.includes(' ')) {
-                        // Handle spaces in enum values
+                    if (value.includes(' ') || value.includes('-')) {
+                        // Handle spaces and hyphens in enum values
                         output += `            return ${name}Enum["${value}"];\n`;
                     } else {
                         output += `            return ${name}Enum.${value};\n`;

@@ -3,6 +3,46 @@
     "title": "Entities",
     "type": "object",
     "properties": {
+        "LanguageCode": {
+            "type": "string",
+            "enum": [
+                "en",
+                "en-gb",
+                "en-us",
+                "de",
+                "fr",
+                "es",
+                "it",
+                "nl",
+                "ja",
+                "ko",
+                "zh"
+            ],
+            "description": "Supported language codes for ThemeParks.wiki"
+        },
+        "MultilangString": {
+            "type": "object",
+            "description": "A string with multiple language translations",
+            "propertyNames": {
+                "$ref": "#/properties/LanguageCode"
+            },
+            "additionalProperties": {
+                "type": "string",
+                "description": "The string in the specified language"
+            }
+        },
+        "LocalisedString": {
+            "oneOf": [
+                {
+                    "$ref": "#/properties/MultilangString"
+                },
+                {
+                    "type": "string",
+                    "description": "A simple string, no localisation. English where available, or native language if not."
+                }
+            ],
+            "description": "A string that may be localised or a simple string"
+        },
         "EntityType": {
             "type": "string",
             "enum": [
@@ -81,7 +121,7 @@
                     "description": "Unique entity identifier"
                 },
                 "name": {
-                    "type": "string",
+                    "$ref": "#/properties/LocalisedString",
                     "description": "Entity name"
                 },
                 "entityType": {

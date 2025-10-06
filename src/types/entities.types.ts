@@ -1,5 +1,58 @@
 // THIS FILE IS GENERATED - DO NOT EDIT DIRECTLY
 
+export enum LanguageCodeEnum {
+    "en" = 'en',
+    "en-gb" = 'en-gb',
+    "en-us" = 'en-us',
+    "de" = 'de',
+    "fr" = 'fr',
+    "es" = 'es',
+    "it" = 'it',
+    "nl" = 'nl',
+    "ja" = 'ja',
+    "ko" = 'ko',
+    "zh" = 'zh',
+}
+
+/** Supported language codes for ThemeParks.wiki */
+export type LanguageCode = keyof typeof LanguageCodeEnum;
+
+// Function to convert string to LanguageCodeEnum
+export function StringToLanguageCode(value: string): LanguageCodeEnum {
+    const lowerValue = value.toLowerCase();
+    switch (lowerValue) {
+        case 'en':
+            return LanguageCodeEnum.en;
+        case 'en-gb':
+            return LanguageCodeEnum["en-gb"];
+        case 'en-us':
+            return LanguageCodeEnum["en-us"];
+        case 'de':
+            return LanguageCodeEnum.de;
+        case 'fr':
+            return LanguageCodeEnum.fr;
+        case 'es':
+            return LanguageCodeEnum.es;
+        case 'it':
+            return LanguageCodeEnum.it;
+        case 'nl':
+            return LanguageCodeEnum.nl;
+        case 'ja':
+            return LanguageCodeEnum.ja;
+        case 'ko':
+            return LanguageCodeEnum.ko;
+        case 'zh':
+            return LanguageCodeEnum.zh;
+    }
+    throw new Error('Unknown LanguageCode value: ' + value);
+}
+
+/** A string with multiple language translations */
+export interface MultilangString extends Record<LanguageCode, string> {}
+
+/** A string that may be localised or a simple string */
+export type LocalisedString = MultilangString | string;
+
 export enum EntityTypeEnum {
     "DESTINATION" = 'DESTINATION',
     "PARK" = 'PARK',
@@ -97,7 +150,7 @@ export type Entity = {
     id: string;
     
     /** Entity name */
-    name: string;
+    name: LocalisedString;
     
     /** Type of entity */
     entityType: EntityType;
@@ -124,6 +177,49 @@ export type Entity = {
 
 // Runtime Schema Registration
 import { registerTypeSchema } from "../type_register.js";
+
+registerTypeSchema("LanguageCode", {
+  "type": "string",
+  "enum": [
+    "en",
+    "en-gb",
+    "en-us",
+    "de",
+    "fr",
+    "es",
+    "it",
+    "nl",
+    "ja",
+    "ko",
+    "zh"
+  ],
+  "description": "Supported language codes for ThemeParks.wiki"
+});
+
+registerTypeSchema("MultilangString", {
+  "type": "object",
+  "description": "A string with multiple language translations",
+  "propertyNames": {
+    "$ref": "#/properties/LanguageCode"
+  },
+  "additionalProperties": {
+    "type": "string",
+    "description": "The string in the specified language"
+  }
+});
+
+registerTypeSchema("LocalisedString", {
+  "oneOf": [
+    {
+      "$ref": "#/properties/MultilangString"
+    },
+    {
+      "type": "string",
+      "description": "A simple string, no localisation. English where available, or native language if not."
+    }
+  ],
+  "description": "A string that may be localised or a simple string"
+});
 
 registerTypeSchema("EntityType", {
   "type": "string",
@@ -207,7 +303,7 @@ registerTypeSchema("Entity", {
       "description": "Unique entity identifier"
     },
     "name": {
-      "type": "string",
+      "$ref": "#/properties/LocalisedString",
       "description": "Entity name"
     },
     "entityType": {
