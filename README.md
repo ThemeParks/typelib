@@ -6,6 +6,10 @@ TypeScript definition system for ThemeParks.wiki
 
 `@themeparks/typelib` is a TypeScript types package that generates types from JSON schemas and provides runtime type validation. It is designed for the internal ThemeParks.wiki systems and generating client libraries. You likely do not want to interact with this library directly.
 
+## Requirements
+
+- Node.js >= 24.0.0
+
 ## Installation
 
 ```bash
@@ -17,30 +21,32 @@ npm install @themeparks/typelib
 ### Using pre-built types
 
 ```typescript
-import { V1RootResponse, registerTypeSchema, getTypeSchema } from '@themeparks/typelib';
+import { Entity, LiveData, EntitySchedule } from '@themeparks/typelib';
 
 // Use generated types
-const response: V1RootResponse = {
-    success: true,
-    message: "API is running", 
-    version: "1.0.0"
+const entity: Entity = {
+    id: 'park-123',
+    name: 'Example Park',
+    entityType: 'PARK',
+    timezone: 'America/New_York',
 };
 
-// Access runtime schemas
-const schema = getTypeSchema('V1RootResponse');
-console.log(schema); // Returns the JSON schema for validation
+const liveData: LiveData = {
+    id: 'attraction-456',
+    status: 'OPERATING',
+};
 ```
 
-### Generating types from custom schemas
+### Enums and conversion functions
 
 ```typescript
-import { generateTypes } from '@themeparks/typelib/generate';
-import { resolve } from 'path';
+import { EntityTypeEnum, StringToEntityType } from '@themeparks/typelib';
 
-await generateTypes({
-    schemaDirs: [resolve('./typesrc')],
-    outputDir: './src/types'
-});
+// Native TypeScript enums
+const type = EntityTypeEnum.ATTRACTION;
+
+// Convert strings to enum values
+const parsed = StringToEntityType('attraction');
 ```
 
 ### Runtime Schema Registry
@@ -55,38 +61,69 @@ Retrieve a registered schema.
 import { registerTypeSchema, getTypeSchema } from '@themeparks/typelib';
 
 // Schemas are automatically registered when importing types
-import { V1RootResponse } from '@themeparks/typelib';
+import { Entity } from '@themeparks/typelib';
 
 // Access the schema at runtime
-const schema = getTypeSchema('V1RootResponse');
+const schema = getTypeSchema('Entity');
+```
+
+### Deterministic Object Hashing
+
+```typescript
+import { hashObject } from '@themeparks/typelib/hash';
+
+// Returns a 64-character hex SHA-256 hash
+const hash = hashObject({ name: 'Example', id: 123 });
+
+// Deterministic — key order doesn't matter
+hashObject({ b: 2, a: 1 }) === hashObject({ a: 1, b: 2 }); // true
+```
+
+### Generating types from schemas
+
+```typescript
+import { generateTypes } from '@themeparks/typelib/generate';
+import { resolve } from 'path';
+
+await generateTypes({
+    schemaDirs: [resolve('./typesrc')],
+    outputDir: './src/types'
+});
 ```
 
 ## Schema Format
 
-Schemas follow JSON Schema Draft 7 specification:
+Schemas follow JSON Schema Draft 7 specification. Each file defines top-level types as properties:
 
 ```json
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "MyTypes",
+  "title": "Entities",
   "type": "object",
   "properties": {
-    "MyType": {
+    "LanguageCode": {
+      "type": "string",
+      "enum": ["en", "en-gb", "de", "fr", "es", "ja", "ko", "zh"],
+      "description": "Supported language codes for ThemeParks.wiki"
+    },
+    "Entity": {
       "type": "object",
-      "required": ["id", "name"],
+      "required": ["id", "name", "entityType", "timezone"],
       "properties": {
         "id": {
           "type": "string",
-          "description": "Unique identifier"
+          "description": "Unique identifier for this entity"
         },
         "name": {
-          "type": "string", 
-          "description": "Display name"
+          "description": "Entity name",
+          "$ref": "#/properties/LocalisedString"
         },
-        "status": {
+        "entityType": {
+          "$ref": "#/properties/EntityType"
+        },
+        "timezone": {
           "type": "string",
-          "enum": ["active", "inactive", "pending"],
-          "description": "Status of the item"
+          "description": "Timezone of this entity (IANA)"
         }
       }
     }
@@ -94,38 +131,29 @@ Schemas follow JSON Schema Draft 7 specification:
 }
 ```
 
+Types can reference each other within the same file using `$ref`, and the generator resolves cross-file references automatically.
+
 ## Generated Output
 
 The generator creates:
-- **Type definitions** - TypeScript interfaces and types
-- **Enum types** - Native TypeScript enums with conversion functions
-- **Runtime registration** - Automatic schema registration
-- **Re-export index** - Convenient imports from a single file
-
-Example generated output:
-```typescript
-// Generated: my-types.types.ts
-
-export interface MyType {
-    /** Unique identifier */
-    id: string;
-    /** Display name */
-    name: string;
-    /** Status of the item */
-    status?: 'active' | 'inactive' | 'pending';
-}
-
-export enum StatusEnum {
-    "active" = 'active',
-    "inactive" = 'inactive', 
-    "pending" = 'pending'
-}
-
-// Runtime schema registration
-registerTypeSchema("MyType", { /* schema */ });
-```
+- **Type definitions** — TypeScript interfaces and types
+- **Enum types** — Native TypeScript enums with `StringTo*` conversion functions
+- **Runtime registration** — Automatic schema registration via `registerTypeSchema`
+- **Re-export index** — Convenient imports from a single file
 
 ## Package Exports
 
-- `@themeparks/typelib` - Main package with types and registry functions
-- `@themeparks/typelib/generate` - Type generation functionality
+- `@themeparks/typelib` — Types, enums, and schema registry functions
+- `@themeparks/typelib/generate` — Type generation from JSON schemas
+- `@themeparks/typelib/hash` — Deterministic SHA-256 object hashing
+
+## Publishing
+
+Builds and publishes to npm automatically via `prepublishOnly`:
+
+```bash
+# Bump version in package.json, then:
+npm publish --access public
+```
+
+This runs `npm run build` (which regenerates types from schemas, then compiles TypeScript) before publishing. The published package includes `dist/`, `typesrc/`, and `src/`.

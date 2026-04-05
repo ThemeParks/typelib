@@ -1,12 +1,18 @@
 {
     "name": "@themeparks/typelib",
-    "version": "1.0.5",
+    "version": "1.1.0",
     "main": "./dist/index.js",
     "module": "./dist/index.js",
     "types": "./dist/index.d.ts",
     "type": "module",
     "description": "TypeScript definitions for ThemeParks.wiki API",
-    "keywords": ["typescript", "types", "api", "schema", "generation"],
+    "keywords": [
+        "typescript",
+        "types",
+        "api",
+        "schema",
+        "generation"
+    ],
     "exports": {
         ".": {
             "types": "./dist/index.d.ts",
@@ -17,15 +23,22 @@
             "types": "./dist/generate_types.d.ts",
             "import": "./dist/generate_types.js",
             "require": "./dist/generate_types.js"
+        },
+        "./hash": {
+            "types": "./dist/hash.d.ts",
+            "import": "./dist/hash.js",
+            "require": "./dist/hash.js"
         }
     },
     "files": [
         "dist/**/*",
         "typesrc/**/*",
+        "src/**/*",
         "README.md"
     ],
     "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1",
+        "test": "vitest run",
+        "test:watch": "vitest",
         "generate:types": "npx tsx ./src/run_generate_types.ts",
         "build": "npm run generate:types && tsc",
         "prepublishOnly": "npm run build",
@@ -34,7 +47,8 @@
     "devDependencies": {
         "@types/node": "^24.5.2",
         "tsx": "^4.7.1",
-        "typescript": "^5.0.0"
+        "typescript": "^5.0.0",
+        "vitest": "^4.1.2"
     },
     "engines": {
         "node": ">=24.0.0"
