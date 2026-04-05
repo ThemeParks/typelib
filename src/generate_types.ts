@@ -34,7 +34,7 @@ interface TypeRegistry {
 }
 
 interface ImportTracker {
-    imports: Map<string, string>; // Map<sourceFile, typeName>
+    imports: Map<string, Set<string>>; // Map<sourceFile, Set<typeName>>
     referencePath: string[];
 }
 
@@ -102,7 +102,10 @@ function resolveReference(ref: string, schema: JSONSchema, registry: TypeRegistr
                 // If still not found, check registry
                 const registryType = registry[segment];
                 if (registryType) {
-                    tracker.imports.set(registryType.sourceFile, segment);
+                    if (!tracker.imports.has(registryType.sourceFile)) {
+                        tracker.imports.set(registryType.sourceFile, new Set());
+                    }
+                    tracker.imports.get(registryType.sourceFile)!.add(segment);
                     tracker.referencePath.pop();
                     return { typeName: segment, sourceFile: registryType.sourceFile };
                 }
@@ -240,7 +243,7 @@ async function generateTypeFile(schemaPath: string, registry: TypeRegistry, outp
 
     // Track imports needed for this file
     const tracker: ImportTracker = {
-        imports: new Map<string, string>(),
+        imports: new Map<string, Set<string>>(),
         referencePath: []
     };
 
@@ -335,7 +338,7 @@ async function generateTypeFile(schemaPath: string, registry: TypeRegistry, outp
     const currentFile = schemaPath.split(/[\/\\]/).pop()!.replace('.json', '');
     const imports = Array.from(tracker.imports.entries())
         .filter(([file]) => file !== currentFile)
-        .map(([file, typeName]) => `import { ${typeName} } from './${file}.types.js';`);
+        .map(([file, typeNames]) => `import { ${Array.from(typeNames).join(', ')} } from './${file}.types.js';`);
 
     if (imports.length > 0) {
         // Replace header with imports and re-add header once
@@ -426,6 +429,6 @@ export async function generateTypes({
         log('Type generation complete!');
     } catch (err) {
         error('Error generating types:', err);
-        process.exit(1);
+        throw err;
     }
 }

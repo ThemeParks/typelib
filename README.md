@@ -17,30 +17,32 @@ npm install @themeparks/typelib
 ### Using pre-built types
 
 ```typescript
-import { V1RootResponse, registerTypeSchema, getTypeSchema } from '@themeparks/typelib';
+import { Entity, LiveData, EntitySchedule } from '@themeparks/typelib';
 
 // Use generated types
-const response: V1RootResponse = {
-    success: true,
-    message: "API is running", 
-    version: "1.0.0"
+const entity: Entity = {
+    id: 'park-123',
+    name: 'Example Park',
+    entityType: 'PARK',
+    timezone: 'America/New_York',
 };
 
-// Access runtime schemas
-const schema = getTypeSchema('V1RootResponse');
-console.log(schema); // Returns the JSON schema for validation
+const liveData: LiveData = {
+    id: 'attraction-456',
+    status: 'OPERATING',
+};
 ```
 
-### Generating types from custom schemas
+### Enums and conversion functions
 
 ```typescript
-import { generateTypes } from '@themeparks/typelib/generate';
-import { resolve } from 'path';
+import { EntityTypeEnum, StringToEntityType } from '@themeparks/typelib';
 
-await generateTypes({
-    schemaDirs: [resolve('./typesrc')],
-    outputDir: './src/types'
-});
+// Native TypeScript enums
+const type = EntityTypeEnum.ATTRACTION;
+
+// Convert strings to enum values
+const parsed = StringToEntityType('attraction');
 ```
 
 ### Runtime Schema Registry
@@ -55,10 +57,34 @@ Retrieve a registered schema.
 import { registerTypeSchema, getTypeSchema } from '@themeparks/typelib';
 
 // Schemas are automatically registered when importing types
-import { V1RootResponse } from '@themeparks/typelib';
+import { Entity } from '@themeparks/typelib';
 
 // Access the schema at runtime
-const schema = getTypeSchema('V1RootResponse');
+const schema = getTypeSchema('Entity');
+```
+
+### Deterministic Object Hashing
+
+```typescript
+import { hashObject } from '@themeparks/typelib/hash';
+
+// Returns a 64-character hex SHA-256 hash
+const hash = hashObject({ name: 'Example', id: 123 });
+
+// Deterministic — key order doesn't matter
+hashObject({ b: 2, a: 1 }) === hashObject({ a: 1, b: 2 }); // true
+```
+
+### Generating types from custom schemas
+
+```typescript
+import { generateTypes } from '@themeparks/typelib/generate';
+import { resolve } from 'path';
+
+await generateTypes({
+    schemaDirs: [resolve('./typesrc')],
+    outputDir: './src/types'
+});
 ```
 
 ## Schema Format
@@ -97,35 +123,13 @@ Schemas follow JSON Schema Draft 7 specification:
 ## Generated Output
 
 The generator creates:
-- **Type definitions** - TypeScript interfaces and types
-- **Enum types** - Native TypeScript enums with conversion functions
-- **Runtime registration** - Automatic schema registration
-- **Re-export index** - Convenient imports from a single file
-
-Example generated output:
-```typescript
-// Generated: my-types.types.ts
-
-export interface MyType {
-    /** Unique identifier */
-    id: string;
-    /** Display name */
-    name: string;
-    /** Status of the item */
-    status?: 'active' | 'inactive' | 'pending';
-}
-
-export enum StatusEnum {
-    "active" = 'active',
-    "inactive" = 'inactive', 
-    "pending" = 'pending'
-}
-
-// Runtime schema registration
-registerTypeSchema("MyType", { /* schema */ });
-```
+- **Type definitions** — TypeScript interfaces and types
+- **Enum types** — Native TypeScript enums with `StringTo*` conversion functions
+- **Runtime registration** — Automatic schema registration via `registerTypeSchema`
+- **Re-export index** — Convenient imports from a single file
 
 ## Package Exports
 
-- `@themeparks/typelib` - Main package with types and registry functions
-- `@themeparks/typelib/generate` - Type generation functionality
+- `@themeparks/typelib` — Types, enums, and schema registry functions
+- `@themeparks/typelib/generate` — Type generation from JSON schemas
+- `@themeparks/typelib/hash` — Deterministic SHA-256 object hashing
