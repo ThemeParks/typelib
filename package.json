@@ -32,8 +32,9 @@
     },
     "files": [
         "dist/**/*",
+        "!dist/__tests__",
+        "!dist/run_generate_types.*",
         "typesrc/**/*",
-        "src/**/*",
         "README.md"
     ],
     "scripts": {
