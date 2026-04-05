@@ -6,6 +6,10 @@ TypeScript definition system for ThemeParks.wiki
 
 `@themeparks/typelib` is a TypeScript types package that generates types from JSON schemas and provides runtime type validation. It is designed for the internal ThemeParks.wiki systems and generating client libraries. You likely do not want to interact with this library directly.
 
+## Requirements
+
+- Node.js >= 24.0.0
+
 ## Installation
 
 ```bash
@@ -75,7 +79,7 @@ const hash = hashObject({ name: 'Example', id: 123 });
 hashObject({ b: 2, a: 1 }) === hashObject({ a: 1, b: 2 }); // true
 ```
 
-### Generating types from custom schemas
+### Generating types from schemas
 
 ```typescript
 import { generateTypes } from '@themeparks/typelib/generate';
@@ -89,36 +93,45 @@ await generateTypes({
 
 ## Schema Format
 
-Schemas follow JSON Schema Draft 7 specification:
+Schemas follow JSON Schema Draft 7 specification. Each file defines top-level types as properties:
 
 ```json
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "MyTypes",
+  "title": "Entities",
   "type": "object",
   "properties": {
-    "MyType": {
+    "LanguageCode": {
+      "type": "string",
+      "enum": ["en", "en-gb", "de", "fr", "es", "ja", "ko", "zh"],
+      "description": "Supported language codes for ThemeParks.wiki"
+    },
+    "Entity": {
       "type": "object",
-      "required": ["id", "name"],
+      "required": ["id", "name", "entityType", "timezone"],
       "properties": {
         "id": {
           "type": "string",
-          "description": "Unique identifier"
+          "description": "Unique identifier for this entity"
         },
         "name": {
-          "type": "string", 
-          "description": "Display name"
+          "description": "Entity name",
+          "$ref": "#/properties/LocalisedString"
         },
-        "status": {
+        "entityType": {
+          "$ref": "#/properties/EntityType"
+        },
+        "timezone": {
           "type": "string",
-          "enum": ["active", "inactive", "pending"],
-          "description": "Status of the item"
+          "description": "Timezone of this entity (IANA)"
         }
       }
     }
   }
 }
 ```
+
+Types can reference each other within the same file using `$ref`, and the generator resolves cross-file references automatically.
 
 ## Generated Output
 
@@ -133,3 +146,14 @@ The generator creates:
 - `@themeparks/typelib` — Types, enums, and schema registry functions
 - `@themeparks/typelib/generate` — Type generation from JSON schemas
 - `@themeparks/typelib/hash` — Deterministic SHA-256 object hashing
+
+## Publishing
+
+Builds and publishes to npm automatically via `prepublishOnly`:
+
+```bash
+# Bump version in package.json, then:
+npm publish --access public
+```
+
+This runs `npm run build` (which regenerates types from schemas, then compiles TypeScript) before publishing. The published package includes `dist/`, `typesrc/`, and `src/`.
