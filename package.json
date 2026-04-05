@@ -1,6 +1,6 @@
 {
     "name": "@themeparks/typelib",
-    "version": "1.1.1",
+    "version": "1.1.2",
     "main": "./dist/index.js",
     "module": "./dist/index.js",
     "types": "./dist/index.d.ts",
@@ -52,6 +52,6 @@
         "vitest": "^4.1.2"
     },
     "engines": {
-        "node": ">=24.0.0"
+        "node": ">=18.0.0"
     }
 }
