@@ -42,7 +42,7 @@
         "test:watch": "vitest",
         "generate:types": "npx tsx ./src/run_generate_types.ts",
         "build": "npm run generate:types && tsc",
-        "prepublishOnly": "npm run build",
+        "prepare": "npm run build",
         "runpublish": "npm publish --access public"
     },
     "devDependencies": {
