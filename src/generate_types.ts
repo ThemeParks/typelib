@@ -216,6 +216,113 @@ function getTypeFromSchema(schema: JSONSchema, rootSchema: JSONSchema, registry:
     }
 }
 
+/**
+ * Generate a discriminated union type from a schema with if/then.
+ * Handles the pattern: if property X equals a const, then require additional properties.
+ * Returns null if the schema doesn't use if/then or can't be converted.
+ */
+function generateDiscriminatedUnion(
+    name: string,
+    schema: JSONSchema,
+    rootSchema: JSONSchema,
+    registry: TypeRegistry,
+    tracker: ImportTracker,
+): string | null {
+    if (!schema.if?.properties || !schema.then?.required || !schema.properties) {
+        return null;
+    }
+
+    // Find the discriminant property and its const value
+    const ifProps = schema.if.properties;
+    const discriminantEntries = Object.entries(ifProps);
+    if (discriminantEntries.length !== 1) return null;
+
+    const [discriminantProp, discriminantSchema] = discriminantEntries[0];
+    if (!(discriminantSchema as JSONSchema).const) return null;
+
+    const matchValue = (discriminantSchema as JSONSchema).const as string;
+    const thenRequired = schema.then.required as string[];
+
+    // Get the discriminant property's full type (the enum ref)
+    const discriminantPropSchema = schema.properties[discriminantProp];
+    if (!discriminantPropSchema) return null;
+
+    // Resolve the full set of enum values for the discriminant
+    let allValues: string[] | null = null;
+    if (discriminantPropSchema.$ref) {
+        const refPath = discriminantPropSchema.$ref.split('/').slice(1);
+        let referenced: any = rootSchema;
+        for (const segment of refPath) {
+            referenced = referenced?.[segment];
+        }
+        if (referenced?.enum) {
+            allValues = referenced.enum;
+        }
+    } else if (discriminantPropSchema.enum) {
+        allValues = discriminantPropSchema.enum;
+    }
+
+    if (!allValues || !allValues.includes(matchValue)) return null;
+
+    const otherValues = allValues.filter(v => v !== matchValue);
+
+    // Build the base properties (everything except the discriminant and conditionally-required fields)
+    const baseProps: string[] = [];
+    for (const [propName, propSchema] of Object.entries(schema.properties)) {
+        if (propName === discriminantProp) continue;
+
+        const isBaseRequired = schema.required?.includes(propName);
+        const isConditionallyRequired = thenRequired.includes(propName);
+
+        // Skip conditionally required props — they'll be in the union branches
+        if (isConditionallyRequired && !isBaseRequired) continue;
+
+        const propType = getTypeFromSchema(propSchema, rootSchema, registry, tracker);
+        const description = propSchema.description
+            ? `\n    /** ${propSchema.description} */\n    `
+            : '';
+        baseProps.push(`${description}${propName}${isBaseRequired ? '' : '?'}: ${propType};`);
+    }
+
+    // Build the "match" branch (e.g. entityType: 'ATTRACTION', attractionType required)
+    const matchBranchProps: string[] = [];
+    const discriminantDesc = discriminantPropSchema.description
+        ? `\n    /** ${discriminantPropSchema.description} */\n    `
+        : '';
+    matchBranchProps.push(`${discriminantDesc}${discriminantProp}: '${matchValue}';`);
+    for (const reqProp of thenRequired) {
+        const propSchema = schema.properties[reqProp];
+        if (!propSchema) continue;
+        const propType = getTypeFromSchema(propSchema, rootSchema, registry, tracker);
+        const description = propSchema.description
+            ? `\n    /** ${propSchema.description} */\n    `
+            : '';
+        matchBranchProps.push(`${description}${reqProp}: ${propType};`);
+    }
+
+    // Build the "other" branch (e.g. entityType: other values, attractionType optional)
+    const otherBranchProps: string[] = [];
+    const otherValuesType = otherValues.map(v => `'${v}'`).join(' | ');
+    otherBranchProps.push(`${discriminantDesc}${discriminantProp}: ${otherValuesType};`);
+    for (const reqProp of thenRequired) {
+        const propSchema = schema.properties[reqProp];
+        if (!propSchema) continue;
+        const propType = getTypeFromSchema(propSchema, rootSchema, registry, tracker);
+        const description = propSchema.description
+            ? `\n    /** ${propSchema.description} */\n    `
+            : '';
+        otherBranchProps.push(`${description}${reqProp}?: ${propType};`);
+    }
+
+    // Assemble the discriminated union
+    let output = `{\n    ${baseProps.join('\n    ')}\n} & (\n`;
+    output += `    | {\n        ${matchBranchProps.join('\n        ')}\n    }\n`;
+    output += `    | {\n        ${otherBranchProps.join('\n        ')}\n    }\n`;
+    output += `)`;
+
+    return output;
+}
+
 function generateRuntimeSchemaExport(schema: JSONSchema, typeRegistryImport: string): string {
     // Generate the runtime schema registration code
     let output = '\n// Runtime Schema Registration\n';
@@ -321,8 +428,11 @@ async function generateTypeFile(schemaPath: string, registry: TypeRegistry, outp
                     output += `${description}export interface ${name} ${getTypeFromSchema(typeSchema, schema, registry, tracker, name)}\n\n`;
                 }
             } else {
-                // Generate regular interface type
-                if (name === 'AdminResponse') {
+                // Check for if/then discriminated union pattern
+                const discriminatedUnion = generateDiscriminatedUnion(name, typeSchema, schema, registry, tracker);
+                if (discriminatedUnion) {
+                    output += `${description}export type ${name} = ${discriminatedUnion}\n\n`;
+                } else if (name === 'AdminResponse') {
                     // Make AdminResponse generic with data type as parameter
                     output += `${description}export interface ${name}<T = any> {\n    success: boolean;\n    data: T;\n}\n\n`;
                 } else {

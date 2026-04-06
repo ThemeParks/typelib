@@ -152,9 +152,6 @@ export type Entity = {
     /** Entity name */
     name: LocalisedString;
     
-    /** Type of entity */
-    entityType: EntityType;
-    
     /** Parent entity identifier, must always be set when entityType is not DESTINATION */
     parentId?: string | null;
     
@@ -172,7 +169,24 @@ export type Entity = {
     
     /** Array of tags associated with the entity */
     tags?: TagData[];
-}
+} & (
+    | {
+        
+    /** Type of entity */
+    entityType: 'ATTRACTION';
+        
+    /** Type of attraction, required when entityType is ATTRACTION */
+    attractionType: AttractionType;
+    }
+    | {
+        
+    /** Type of entity */
+    entityType: 'DESTINATION' | 'PARK' | 'RESTAURANT' | 'SHOW' | 'HOTEL';
+        
+    /** Type of attraction, required when entityType is ATTRACTION */
+    attractionType?: AttractionType;
+    }
+)
 
 
 // Runtime Schema Registration
@@ -310,6 +324,10 @@ registerTypeSchema("Entity", {
       "$ref": "#/properties/EntityType",
       "description": "Type of entity"
     },
+    "attractionType": {
+      "$ref": "#/properties/AttractionType",
+      "description": "Type of attraction, required when entityType is ATTRACTION"
+    },
     "parentId": {
       "type": "string",
       "nullable": true,
@@ -340,6 +358,18 @@ registerTypeSchema("Entity", {
       },
       "description": "Array of tags associated with the entity"
     }
+  },
+  "if": {
+    "properties": {
+      "entityType": {
+        "const": "ATTRACTION"
+      }
+    }
+  },
+  "then": {
+    "required": [
+      "attractionType"
+    ]
   }
 });
 
