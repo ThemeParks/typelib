@@ -5,6 +5,7 @@
     "module": "./dist/index.js",
     "types": "./dist/index.d.ts",
     "type": "module",
+    "license": "MIT",
     "description": "TypeScript definitions for ThemeParks.wiki API",
     "keywords": [
         "typescript",

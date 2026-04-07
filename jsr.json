@@ -1,0 +1,19 @@
+{
+    "name": "@themeparks/typelib",
+    "version": "1.1.2",
+    "exports": {
+        ".": "./src/index.ts",
+        "./generate": "./src/generate_types.ts",
+        "./hash": "./src/hash.ts"
+    },
+    "publish": {
+        "include": [
+            "src/**/*.ts",
+            "typesrc/**/*.json",
+            "README.md"
+        ],
+        "exclude": [
+            "src/__tests__"
+        ]
+    }
+}
