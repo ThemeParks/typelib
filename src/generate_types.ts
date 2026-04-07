@@ -1,4 +1,18 @@
-// Script to generate TypeScript interface files from JSON schemas
+/**
+ * @module
+ * Type generation engine that creates TypeScript definitions from JSON schemas.
+ *
+ * @example
+ * ```ts
+ * import { generateTypes } from '@themeparks/typelib/generate';
+ * import { resolve } from 'path';
+ *
+ * await generateTypes({
+ *     schemaDirs: [resolve('./typesrc')],
+ *     outputDir: './src/types',
+ * });
+ * ```
+ */
 
 import { promises as fs } from 'fs';
 import { join } from 'path';
@@ -367,7 +381,7 @@ async function generateTypeFile(schemaPath: string, registry: TypeRegistry, outp
             // Handle objects with const values (like HttpStatusCode)
             const hasConstValues = Object.entries(typeSchema.properties).some(([_, prop]) => prop.const !== undefined);
             if (hasConstValues) {
-                output += `export enum ${name}Enum {\n`;
+                output += `${description}export enum ${name}Enum {\n`;
                 Object.entries(typeSchema.properties).forEach(([key, prop]) => {
                     output += `    ${key} = ${prop.const},\n`;
                 });
@@ -383,7 +397,7 @@ async function generateTypeFile(schemaPath: string, registry: TypeRegistry, outp
             output += `${description}export type ${name} = ${typeStr};\n\n`;
         } else if (typeSchema.enum && Array.isArray(typeSchema.enum)) {
             // generate a native enum for enum types
-            output += `export enum ${name}Enum {\n`;
+            output += `${description}export enum ${name}Enum {\n`;
             typeSchema.enum.forEach((value: string) => {
                 output += `    "${value}" = '${value}',\n`;
             });
@@ -393,7 +407,7 @@ async function generateTypeFile(schemaPath: string, registry: TypeRegistry, outp
             output += `${description}export type ${name} = keyof typeof ${name}Enum;\n\n`;
 
             // Also generate a StringTo${name} function
-            output += `// Function to convert string to ${name}Enum\n`;
+            output += `/** Convert a string to a {@link ${name}Enum} value (case-insensitive) */\n`;
             output += `export function StringTo${name}(value: string): ${name}Enum {\n`;
             output += `    const lowerValue = value.toLowerCase();\n`;
             output += `    switch (lowerValue) {\n`;

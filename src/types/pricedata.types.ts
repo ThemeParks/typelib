@@ -1,5 +1,6 @@
 // THIS FILE IS GENERATED - DO NOT EDIT DIRECTLY
 
+/** Currently supported currency codes by ThemeParks.wiki */
 export enum CurrencyTypesEnum {
     "USD" = 'USD',
     "EUR" = 'EUR',
@@ -10,7 +11,7 @@ export enum CurrencyTypesEnum {
 /** Currently supported currency codes by ThemeParks.wiki */
 export type CurrencyTypes = keyof typeof CurrencyTypesEnum;
 
-// Function to convert string to CurrencyTypesEnum
+/** Convert a string to a {@link CurrencyTypesEnum} value (case-insensitive) */
 export function StringToCurrencyTypes(value: string): CurrencyTypesEnum {
     const lowerValue = value.toLowerCase();
     switch (lowerValue) {

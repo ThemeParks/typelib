@@ -2,6 +2,7 @@
 
 import { PriceData } from './pricedata.types.js';
 
+/** Current operating status of an entity */
 export enum LiveStatusTypeEnum {
     "OPERATING" = 'OPERATING',
     "DOWN" = 'DOWN',
@@ -12,7 +13,7 @@ export enum LiveStatusTypeEnum {
 /** Current operating status of an entity */
 export type LiveStatusType = keyof typeof LiveStatusTypeEnum;
 
-// Function to convert string to LiveStatusTypeEnum
+/** Convert a string to a {@link LiveStatusTypeEnum} value (case-insensitive) */
 export function StringToLiveStatusType(value: string): LiveStatusTypeEnum {
     const lowerValue = value.toLowerCase();
     switch (lowerValue) {
@@ -28,6 +29,7 @@ export function StringToLiveStatusType(value: string): LiveStatusTypeEnum {
     throw new Error('Unknown LiveStatusType value: ' + value);
 }
 
+/** State of return time availability */
 export enum ReturnTimeStateEnum {
     "AVAILABLE" = 'AVAILABLE',
     "TEMP_FULL" = 'TEMP_FULL',
@@ -37,7 +39,7 @@ export enum ReturnTimeStateEnum {
 /** State of return time availability */
 export type ReturnTimeState = keyof typeof ReturnTimeStateEnum;
 
-// Function to convert string to ReturnTimeStateEnum
+/** Convert a string to a {@link ReturnTimeStateEnum} value (case-insensitive) */
 export function StringToReturnTimeState(value: string): ReturnTimeStateEnum {
     const lowerValue = value.toLowerCase();
     switch (lowerValue) {
@@ -51,6 +53,7 @@ export function StringToReturnTimeState(value: string): ReturnTimeStateEnum {
     throw new Error('Unknown ReturnTimeState value: ' + value);
 }
 
+/** State of boarding group availability */
 export enum BoardingGroupStateEnum {
     "AVAILABLE" = 'AVAILABLE',
     "PAUSED" = 'PAUSED',
@@ -60,7 +63,7 @@ export enum BoardingGroupStateEnum {
 /** State of boarding group availability */
 export type BoardingGroupState = keyof typeof BoardingGroupStateEnum;
 
-// Function to convert string to BoardingGroupStateEnum
+/** Convert a string to a {@link BoardingGroupStateEnum} value (case-insensitive) */
 export function StringToBoardingGroupState(value: string): BoardingGroupStateEnum {
     const lowerValue = value.toLowerCase();
     switch (lowerValue) {
@@ -74,6 +77,7 @@ export function StringToBoardingGroupState(value: string): BoardingGroupStateEnu
     throw new Error('Unknown BoardingGroupState value: ' + value);
 }
 
+/** Types of queues that an attraction may have */
 export enum QueueTypeEnum {
     "STANDBY" = 'STANDBY',
     "SINGLE_RIDER" = 'SINGLE_RIDER',
@@ -86,7 +90,7 @@ export enum QueueTypeEnum {
 /** Types of queues that an attraction may have */
 export type QueueType = keyof typeof QueueTypeEnum;
 
-// Function to convert string to QueueTypeEnum
+/** Convert a string to a {@link QueueTypeEnum} value (case-insensitive) */
 export function StringToQueueType(value: string): QueueTypeEnum {
     const lowerValue = value.toLowerCase();
     switch (lowerValue) {

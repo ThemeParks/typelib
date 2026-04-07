@@ -1,5 +1,6 @@
 // THIS FILE IS GENERATED - DO NOT EDIT DIRECTLY
 
+/** Supported language codes for ThemeParks.wiki */
 export enum LanguageCodeEnum {
     "en" = 'en',
     "en-gb" = 'en-gb',
@@ -17,7 +18,7 @@ export enum LanguageCodeEnum {
 /** Supported language codes for ThemeParks.wiki */
 export type LanguageCode = keyof typeof LanguageCodeEnum;
 
-// Function to convert string to LanguageCodeEnum
+/** Convert a string to a {@link LanguageCodeEnum} value (case-insensitive) */
 export function StringToLanguageCode(value: string): LanguageCodeEnum {
     const lowerValue = value.toLowerCase();
     switch (lowerValue) {
@@ -53,6 +54,7 @@ export interface MultilangString extends Partial<Record<LanguageCode, string>> {
 /** A string that may be localised or a simple string */
 export type LocalisedString = MultilangString | string;
 
+/** Possible types of entity in ThemeParks.wiki */
 export enum EntityTypeEnum {
     "DESTINATION" = 'DESTINATION',
     "PARK" = 'PARK',
@@ -65,7 +67,7 @@ export enum EntityTypeEnum {
 /** Possible types of entity in ThemeParks.wiki */
 export type EntityType = keyof typeof EntityTypeEnum;
 
-// Function to convert string to EntityTypeEnum
+/** Convert a string to a {@link EntityTypeEnum} value (case-insensitive) */
 export function StringToEntityType(value: string): EntityTypeEnum {
     const lowerValue = value.toLowerCase();
     switch (lowerValue) {
@@ -85,6 +87,7 @@ export function StringToEntityType(value: string): EntityTypeEnum {
     throw new Error('Unknown EntityType value: ' + value);
 }
 
+/** Possible types of attraction in ThemeParks.wiki */
 export enum AttractionTypeEnum {
     "UNKNOWN" = 'UNKNOWN',
     "RIDE" = 'RIDE',
@@ -98,7 +101,7 @@ export enum AttractionTypeEnum {
 /** Possible types of attraction in ThemeParks.wiki */
 export type AttractionType = keyof typeof AttractionTypeEnum;
 
-// Function to convert string to AttractionTypeEnum
+/** Convert a string to a {@link AttractionTypeEnum} value (case-insensitive) */
 export function StringToAttractionType(value: string): AttractionTypeEnum {
     const lowerValue = value.toLowerCase();
     switch (lowerValue) {

@@ -1,5 +1,14 @@
 /**
+ * @module
  * Deterministic object hashing using node:crypto SHA-256.
+ *
+ * @example
+ * ```ts
+ * import { hashObject } from '@themeparks/typelib/hash';
+ *
+ * const hash = hashObject({ name: 'Example', id: 123 });
+ * hashObject({ b: 2, a: 1 }) === hashObject({ a: 1, b: 2 }); // true
+ * ```
  *
  * ## Supported types
  * Plain objects, arrays, strings, numbers, booleans, null.
@@ -7,9 +16,6 @@
  * ## Unsupported types (throws TypeError)
  * undefined, Date, Map, Set, TypedArrays (Buffer, Uint8Array, etc.),
  * Function, BigInt, Symbol, and circular references.
- *
- * Unsupported types throw rather than silently producing a hash that
- * diverges from the previous object-hash implementation.
  *
  * ## Key ordering
  * Object keys are sorted recursively before serialisation, so

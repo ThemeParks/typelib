@@ -1,5 +1,6 @@
 // THIS FILE IS GENERATED - DO NOT EDIT DIRECTLY
 
+/** Types of schedule entries for parks */
 export enum ScheduleTypeEnum {
     "OPERATING" = 'OPERATING',
     "TICKETED_EVENT" = 'TICKETED_EVENT',
@@ -11,7 +12,7 @@ export enum ScheduleTypeEnum {
 /** Types of schedule entries for parks */
 export type ScheduleType = keyof typeof ScheduleTypeEnum;
 
-// Function to convert string to ScheduleTypeEnum
+/** Convert a string to a {@link ScheduleTypeEnum} value (case-insensitive) */
 export function StringToScheduleType(value: string): ScheduleTypeEnum {
     const lowerValue = value.toLowerCase();
     switch (lowerValue) {
