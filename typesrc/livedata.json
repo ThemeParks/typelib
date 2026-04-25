@@ -50,8 +50,8 @@
                     "type": "object",
                     "properties": {
                         "waitTime": {
-                            "type": "number",
-                            "description": "Current standby wait time in minutes"
+                            "type": ["number", "null"],
+                            "description": "Current standby wait time in minutes; null when the queue exists but no current value is available"
                         }
                     },
                     "description": "Standard queue type for most attractions. Wait in line for attraction, no additional cost."

@@ -115,8 +115,8 @@ export type LiveQueue = {
     /** Standard queue type for most attractions. Wait in line for attraction, no additional cost. */
     STANDBY?: {
     
-    /** Current standby wait time in minutes */
-    waitTime?: number;
+    /** Current standby wait time in minutes; null when the queue exists but no current value is available */
+    waitTime?: number | null;
 };
     
     /** Single Rider queue type for attractions that offer it. Usually a shorter wait time, but you may be separated from your party. No additional cost. */
@@ -281,8 +281,11 @@ registerTypeSchema("LiveQueue", {
       "type": "object",
       "properties": {
         "waitTime": {
-          "type": "number",
-          "description": "Current standby wait time in minutes"
+          "type": [
+            "number",
+            "null"
+          ],
+          "description": "Current standby wait time in minutes; null when the queue exists but no current value is available"
         }
       },
       "description": "Standard queue type for most attractions. Wait in line for attraction, no additional cost."
