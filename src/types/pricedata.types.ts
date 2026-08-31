@@ -29,8 +29,8 @@ export function StringToCurrencyTypes(value: string): CurrencyTypesEnum {
 
 export type PriceData = {
     
-    /** Numerical price amount. Always in the lowest denomination (e.g. cents for USD) */
-    amount: number;
+    /** Numerical price amount. Always in the lowest denomination (e.g. cents for USD). null when the price is unknown, i.e. the item costs money but the provider does not publish an amount; 0 means genuinely free */
+    amount: number | null;
     
     /** Currency code */
     currency: CurrencyTypes;
@@ -62,8 +62,11 @@ registerTypeSchema("PriceData", {
   ],
   "properties": {
     "amount": {
-      "type": "number",
-      "description": "Numerical price amount. Always in the lowest denomination (e.g. cents for USD)"
+      "type": [
+        "number",
+        "null"
+      ],
+      "description": "Numerical price amount. Always in the lowest denomination (e.g. cents for USD). null when the price is unknown, i.e. the item costs money but the provider does not publish an amount; 0 means genuinely free"
     },
     "currency": {
       "$ref": "#/properties/CurrencyTypes",

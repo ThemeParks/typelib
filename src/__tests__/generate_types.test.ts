@@ -843,6 +843,9 @@ describe('real schema pipeline', () => {
         expect(schedule).toContain('export enum ScheduleTypeEnum');
         expect(pricedata).toContain('export enum CurrencyTypesEnum');
 
+        // Unknown prices are representable: null amount is distinct from free
+        expect(pricedata).toContain('amount: number | null;');
+
         // Cross-file references in livedata
         expect(livedata).toContain("import { PriceData } from './pricedata.types.js'");
 
