@@ -24,6 +24,15 @@ jobs:
         with:
           node-version: ${{ matrix.node }}
           cache: npm
+
+      # Node 20 and 22 ship npm 10, which cannot install this dev tree at all:
+      # it crashes resolving vite 8 with "Cannot read properties of null
+      # (reading 'edgesOut')", and rejects the committed lockfile as out of
+      # sync. npm 11 installs it cleanly on all three. The npm version is a
+      # build-tool concern, not part of what this package promises callers, so
+      # it is pinned rather than letting the Node image decide.
+      - run: npm install -g npm@11
+
       - run: npm ci
       - run: npx tsc --noEmit
       - run: npm test
@@ -37,6 +46,7 @@ jobs:
         with:
           node-version: 24
           cache: npm
+      - run: npm install -g npm@11
       - run: npm ci
 
       # src/types/*.ts is generated from typesrc/*.json and committed. npm
