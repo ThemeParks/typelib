@@ -83,18 +83,40 @@ jobs:
       # A half-finished release is the failure this repo already lived through:
       # JSR sat on 1.1.4 while npm moved to 1.2.0, and nothing said so for five
       # months. If one publish lands and the other does not, fail here and now.
+      # Asked of the registries themselves over plain HTTP, not through `npm
+      # view`: setup-node writes an .npmrc referencing NODE_AUTH_TOKEN, which
+      # is unset under trusted publishing, and this step must not be the one
+      # that trips over its own auth config.
+      #
+      # Polled rather than slept, because both registries sit behind a CDN and
+      # a new version takes an unpredictable few seconds to be readable.
       - name: Both registries must serve this version
         run: |
           VERSION="${GITHUB_REF_NAME#v}"
-          sleep 15
-          NPM=$(npm view "@themeparks/typelib@$VERSION" version 2>/dev/null || echo "MISSING")
-          JSR=$(curl -fsSL https://jsr.io/@themeparks/typelib/meta.json \
-                | node -e "let s='';process.stdin.on('data',d=>s+=d).on('end',()=>{const v=JSON.parse(s).versions||{};console.log(v['$VERSION']?'$VERSION':'MISSING')})")
-          echo "npm=$NPM jsr=$JSR"
-          if [ "$NPM" != "$VERSION" ] || [ "$JSR" != "$VERSION" ]; then
-            echo "::error::registries out of step after publishing — npm=$NPM jsr=$JSR"
-            exit 1
-          fi
+
+          has_npm() {
+            curl -fsSL "https://registry.npmjs.org/@themeparks%2ftypelib" \
+              | jq -e --arg v "$VERSION" '.versions | has($v)' >/dev/null
+          }
+          has_jsr() {
+            curl -fsSL "https://jsr.io/@themeparks/typelib/meta.json" \
+              | jq -e --arg v "$VERSION" '.versions | has($v)' >/dev/null
+          }
+
+          for attempt in $(seq 1 10); do
+            npm_ok=false; jsr_ok=false
+            has_npm && npm_ok=true
+            has_jsr && jsr_ok=true
+            echo "attempt $attempt: npm=$npm_ok jsr=$jsr_ok"
+            if [ "$npm_ok" = true ] && [ "$jsr_ok" = true ]; then
+              echo "both registries serve $VERSION"
+              exit 0
+            fi
+            sleep 15
+          done
+
+          echo "::error::registries out of step after publishing $VERSION — npm=$npm_ok jsr=$jsr_ok"
+          exit 1
 
       - uses: softprops/action-gh-release@v3
         with:
