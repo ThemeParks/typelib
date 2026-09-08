@@ -1,0 +1,54 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    name: Test (Node ${{ matrix.node }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # package.json says engines.node >=18, but vitest 4 requires
+        # ^20 || ^22 || >=24, so the suite cannot run on 18 at all. Testing
+        # what can actually be tested rather than claiming a version we never
+        # exercise. Either engines drops to what is covered here, or 18 needs
+        # a toolchain that still supports it.
+        node: [20, 22, 24]
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: ${{ matrix.node }}
+          cache: npm
+      - run: npm ci
+      - run: npx tsc --noEmit
+      - run: npm test
+
+  generated-types:
+    name: Generated types match typesrc
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+
+      # src/types/*.ts is generated from typesrc/*.json and committed. npm
+      # regenerates during its build, but JSR publishes the committed src/
+      # verbatim with no build step — so a schema edit without a regenerate
+      # ships correct types to npm and stale ones to JSR.
+      - name: Regenerate from schemas
+        run: npm run generate:types
+
+      - name: Fail if the committed output is stale
+        run: |
+          if ! git diff --exit-code -- src/types; then
+            echo "::error::src/types is out of date. Run 'npm run generate:types' and commit the result."
+            exit 1
+          fi
