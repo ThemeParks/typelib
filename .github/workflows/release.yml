@@ -1,0 +1,123 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    name: Publish to npm and JSR
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      # Both publishes authenticate by OIDC, not by a stored token: npm via
+      # trusted publishing, JSR via its linked-repository setting.
+      id-token: write
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+          registry-url: https://registry.npmjs.org
+
+      # Pinned to a floor within a known-good major rather than @latest.
+      # Trusted publishing needs npm >= 11.5.1, and @latest has already moved
+      # to npm 12, which requires a newer node than this job runs — chasing it
+      # makes the publish depend on npm's release schedule.
+      - run: npm install -g npm@^11.5.1
+
+      - run: npm ci
+
+      # npm's build regenerates src/types; JSR publishes what is committed. If
+      # `npm ci` moved anything here, the two registries would receive
+      # different types from the same tag.
+      - name: Refuse to publish if the committed types are stale
+        run: |
+          if ! git diff --exit-code -- src/types; then
+            echo "::error::src/types is stale. npm would ship regenerated types and JSR the committed ones."
+            exit 1
+          fi
+
+      # The tag is the only thing a human types here, so it is the thing most
+      # likely to be wrong. Publishing 1.2.0 from a tag reading v1.3.0 would
+      # be silent on both registries.
+      - name: Tag must match both manifests
+        run: |
+          TAG="${GITHUB_REF_NAME#v}"
+          PKG=$(node -p "require('./package.json').version")
+          JSR=$(node -p "require('./jsr.json').version")
+          echo "tag=$TAG package.json=$PKG jsr.json=$JSR"
+          if [ "$TAG" != "$PKG" ] || [ "$TAG" != "$JSR" ]; then
+            echo "::error::tag $TAG does not match package.json $PKG and jsr.json $JSR"
+            exit 1
+          fi
+
+      - run: npx tsc --noEmit
+      - run: npm test
+
+      # npm goes first deliberately. It is the publish more likely to be
+      # refused on configuration, and a refusal here leaves both registries
+      # untouched rather than leaving JSR a version ahead.
+      - name: Publish to npm
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          if [[ "$VERSION" == *-* ]]; then
+            npm publish --provenance --access public --tag next
+          else
+            npm publish --provenance --access public
+          fi
+
+      # The jsr CLI, not a raw `deno publish`. Bare `deno publish` fails on
+      # this source, which imports with .js extensions (TypeScript's NodeNext
+      # convention) and needs Deno's sloppy-imports and byonm unstable flags;
+      # the CLI supplies them itself, so they cannot drift from what jsr
+      # expects. It also declines to republish a version JSR already has,
+      # which keeps a re-run of this job harmless.
+      - name: Publish to JSR
+        run: npx jsr publish
+
+      # A half-finished release is the failure this repo already lived through:
+      # JSR sat on 1.1.4 while npm moved to 1.2.0, and nothing said so for five
+      # months. If one publish lands and the other does not, fail here and now.
+      # Asked of the registries themselves over plain HTTP, not through `npm
+      # view`: setup-node writes an .npmrc referencing NODE_AUTH_TOKEN, which
+      # is unset under trusted publishing, and this step must not be the one
+      # that trips over its own auth config.
+      #
+      # Polled rather than slept, because both registries sit behind a CDN and
+      # a new version takes an unpredictable few seconds to be readable.
+      - name: Both registries must serve this version
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+
+          has_npm() {
+            curl -fsSL "https://registry.npmjs.org/@themeparks%2ftypelib" \
+              | jq -e --arg v "$VERSION" '.versions | has($v)' >/dev/null
+          }
+          has_jsr() {
+            curl -fsSL "https://jsr.io/@themeparks/typelib/meta.json" \
+              | jq -e --arg v "$VERSION" '.versions | has($v)' >/dev/null
+          }
+
+          for attempt in $(seq 1 10); do
+            npm_ok=false; jsr_ok=false
+            has_npm && npm_ok=true
+            has_jsr && jsr_ok=true
+            echo "attempt $attempt: npm=$npm_ok jsr=$jsr_ok"
+            if [ "$npm_ok" = true ] && [ "$jsr_ok" = true ]; then
+              echo "both registries serve $VERSION"
+              exit 0
+            fi
+            sleep 15
+          done
+
+          echo "::error::registries out of step after publishing $VERSION — npm=$npm_ok jsr=$jsr_ok"
+          exit 1
+
+      - uses: softprops/action-gh-release@v3
+        with:
+          generate_release_notes: true
