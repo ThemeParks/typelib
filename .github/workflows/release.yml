@@ -71,21 +71,14 @@ jobs:
             npm publish --provenance --access public
           fi
 
-      - uses: denoland/setup-deno@v2
-        with:
-          deno-version: v2.x
-
-      # These four flags are what the `jsr` CLI shells out to. Bare
-      # `deno publish` fails on this source: it imports with .js extensions
-      # (TypeScript's NodeNext convention), which Deno accepts only under
-      # sloppy imports.
+      # The jsr CLI, not a raw `deno publish`. Bare `deno publish` fails on
+      # this source, which imports with .js extensions (TypeScript's NodeNext
+      # convention) and needs Deno's sloppy-imports and byonm unstable flags;
+      # the CLI supplies them itself, so they cannot drift from what jsr
+      # expects. It also declines to republish a version JSR already has,
+      # which keeps a re-run of this job harmless.
       - name: Publish to JSR
-        run: |
-          deno publish \
-            --unstable-bare-node-builtins \
-            --unstable-sloppy-imports \
-            --unstable-byonm \
-            --no-check
+        run: npx jsr publish
 
       # A half-finished release is the failure this repo already lived through:
       # JSR sat on 1.1.4 while npm moved to 1.2.0, and nothing said so for five
