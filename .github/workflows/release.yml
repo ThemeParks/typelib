@@ -1,0 +1,108 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    name: Publish to npm and JSR
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      # Both publishes authenticate by OIDC, not by a stored token: npm via
+      # trusted publishing, JSR via its linked-repository setting.
+      id-token: write
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+          registry-url: https://registry.npmjs.org
+
+      # Pinned to a floor within a known-good major rather than @latest.
+      # Trusted publishing needs npm >= 11.5.1, and @latest has already moved
+      # to npm 12, which requires a newer node than this job runs — chasing it
+      # makes the publish depend on npm's release schedule.
+      - run: npm install -g npm@^11.5.1
+
+      - run: npm ci
+
+      # npm's build regenerates src/types; JSR publishes what is committed. If
+      # `npm ci` moved anything here, the two registries would receive
+      # different types from the same tag.
+      - name: Refuse to publish if the committed types are stale
+        run: |
+          if ! git diff --exit-code -- src/types; then
+            echo "::error::src/types is stale. npm would ship regenerated types and JSR the committed ones."
+            exit 1
+          fi
+
+      # The tag is the only thing a human types here, so it is the thing most
+      # likely to be wrong. Publishing 1.2.0 from a tag reading v1.3.0 would
+      # be silent on both registries.
+      - name: Tag must match both manifests
+        run: |
+          TAG="${GITHUB_REF_NAME#v}"
+          PKG=$(node -p "require('./package.json').version")
+          JSR=$(node -p "require('./jsr.json').version")
+          echo "tag=$TAG package.json=$PKG jsr.json=$JSR"
+          if [ "$TAG" != "$PKG" ] || [ "$TAG" != "$JSR" ]; then
+            echo "::error::tag $TAG does not match package.json $PKG and jsr.json $JSR"
+            exit 1
+          fi
+
+      - run: npx tsc --noEmit
+      - run: npm test
+
+      # npm goes first deliberately. It is the publish more likely to be
+      # refused on configuration, and a refusal here leaves both registries
+      # untouched rather than leaving JSR a version ahead.
+      - name: Publish to npm
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          if [[ "$VERSION" == *-* ]]; then
+            npm publish --provenance --access public --tag next
+          else
+            npm publish --provenance --access public
+          fi
+
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+
+      # These four flags are what the `jsr` CLI shells out to. Bare
+      # `deno publish` fails on this source: it imports with .js extensions
+      # (TypeScript's NodeNext convention), which Deno accepts only under
+      # sloppy imports.
+      - name: Publish to JSR
+        run: |
+          deno publish \
+            --unstable-bare-node-builtins \
+            --unstable-sloppy-imports \
+            --unstable-byonm \
+            --no-check
+
+      # A half-finished release is the failure this repo already lived through:
+      # JSR sat on 1.1.4 while npm moved to 1.2.0, and nothing said so for five
+      # months. If one publish lands and the other does not, fail here and now.
+      - name: Both registries must serve this version
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          sleep 15
+          NPM=$(npm view "@themeparks/typelib@$VERSION" version 2>/dev/null || echo "MISSING")
+          JSR=$(curl -fsSL https://jsr.io/@themeparks/typelib/meta.json \
+                | node -e "let s='';process.stdin.on('data',d=>s+=d).on('end',()=>{const v=JSON.parse(s).versions||{};console.log(v['$VERSION']?'$VERSION':'MISSING')})")
+          echo "npm=$NPM jsr=$JSR"
+          if [ "$NPM" != "$VERSION" ] || [ "$JSR" != "$VERSION" ]; then
+            echo "::error::registries out of step after publishing — npm=$NPM jsr=$JSR"
+            exit 1
+          fi
+
+      - uses: softprops/action-gh-release@v3
+        with:
+          generate_release_notes: true
