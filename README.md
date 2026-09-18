@@ -6,6 +6,35 @@ TypeScript definition system for ThemeParks.wiki
 
 `@themeparks/typelib` is a TypeScript types package that generates types from JSON schemas and provides runtime type validation. It is designed for the internal ThemeParks.wiki systems and generating client libraries. You likely do not want to interact with this library directly.
 
+## Upgrading to 2.0.0
+
+Four queue fields became nullable, because the API has always been able to
+return null for them and the types said otherwise:
+
+```ts
+LiveQueue.RETURN_TIME.state              ReturnTimeState    -> ReturnTimeState | null
+LiveQueue.PAID_RETURN_TIME.state         ReturnTimeState    -> ReturnTimeState | null
+LiveQueue.PAID_RETURN_TIME.price         PriceData          -> PriceData | null
+LiveQueue.BOARDING_GROUP.allocationStatus BoardingGroupState -> BoardingGroupState | null
+```
+
+A park that publishes a return-time queue without a state produces
+`state: null`, and that has been true since the field existed. The previous
+types told the compiler it could not happen, which made the null check a
+caller needs look like dead code.
+
+If your code reads any of these without a null check, it will now fail to
+compile — at the exact place it would previously have thrown at runtime. The
+fix is the check you were already missing:
+
+```ts
+if (queue.RETURN_TIME?.state) { /* ... */ }
+```
+
+Nothing else changed shape. The runtime schemas from `getTypeSchema` already
+carried `nullable: true` on these fields, so validating consumers were
+unaffected either way.
+
 ## Requirements
 
 - Node.js >= 18.0.0

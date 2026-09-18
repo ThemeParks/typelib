@@ -856,3 +856,163 @@ describe('real schema pipeline', () => {
         expect(index).toContain("export * from './pricedata.types.js'");
     });
 });
+
+describe('nullable references', () => {
+    // `nullable: true` was honoured on every scalar, array and inline object —
+    // and silently DROPPED beside a `$ref`, because the `$ref` branch returned
+    // the resolved type name and never looked at the rest of the schema.
+    //
+    // That is not a cosmetic gap. The published API returns null for four
+    // fields that are `$ref`s to enums and to PriceData, and has done since the
+    // fields existed: `queue.RETURN_TIME.state` is null wherever the park
+    // publishes a return-time node without a state. Marking those `nullable` in
+    // the schema changed the runtime JSON Schema — which consumers validate
+    // against — while the emitted TypeScript went on telling the compiler the
+    // null could not happen. A type that is wrong in the direction of "this is
+    // never null" is worse than no type: it makes the null check look dead.
+
+    it('emits T | null for a nullable $ref to an enum', async () => {
+        await writeSchema('queues.json', {
+            title: 'Queues',
+            type: 'object',
+            properties: {
+                ReturnState: { type: 'string', enum: ['AVAILABLE', 'FINISHED'] },
+                ReturnTime: {
+                    type: 'object',
+                    required: ['state'],
+                    properties: {
+                        // The shape the real schema uses: a $ref carrying its
+                        // own nullable and description alongside.
+                        state: { $ref: '#/properties/ReturnState', nullable: true, description: 'null once withdrawn' },
+                    },
+                },
+            },
+        });
+
+        await generate();
+        const content = await readOutput('queues.types.ts');
+
+        expect(content).toContain('state: ReturnState | null;');
+    });
+
+    it('emits T | null for a nullable $ref to an object', async () => {
+        // PriceData is the second half of the real case: an object $ref, not an
+        // enum, so the fix cannot be special-cased to enums.
+        await writeSchema('money.json', {
+            title: 'Money',
+            type: 'object',
+            properties: {
+                Price: {
+                    type: 'object',
+                    required: ['amount'],
+                    properties: { amount: { type: 'number' } },
+                },
+                PaidQueue: {
+                    type: 'object',
+                    required: ['price'],
+                    properties: { price: { $ref: '#/properties/Price', nullable: true } },
+                },
+            },
+        });
+
+        await generate();
+        const content = await readOutput('money.types.ts');
+
+        expect(content).toContain('price: Price | null;');
+    });
+
+    it('emits T | null across a cross-file nullable $ref, keeping the import', async () => {
+        await writeSchema('base.json', {
+            title: 'Base',
+            type: 'object',
+            properties: { Currency: { type: 'string', enum: ['USD', 'GBP'] } },
+        });
+        await writeSchema('wallet.json', {
+            title: 'Wallet',
+            type: 'object',
+            properties: {
+                Wallet: {
+                    type: 'object',
+                    required: ['currency'],
+                    properties: { currency: { $ref: '#/properties/Currency', nullable: true } },
+                },
+            },
+        });
+
+        await generate();
+        const content = await readOutput('wallet.types.ts');
+
+        expect(content).toContain('currency: Currency | null;');
+        // The union must not cost the import that makes the name resolvable.
+        expect(content).toMatch(/import .*Currency.* from '\.\/base\.types\.js'/);
+    });
+
+    it('leaves a non-nullable $ref exactly as it was', async () => {
+        // The regression that matters most: every existing $ref must keep its
+        // bare type. There are hundreds of them across the real schemas.
+        await writeSchema('plain.json', {
+            title: 'Plain',
+            type: 'object',
+            properties: {
+                Status: { type: 'string', enum: ['ON', 'OFF'] },
+                Thing: {
+                    type: 'object',
+                    required: ['status'],
+                    properties: { status: { $ref: '#/properties/Status' } },
+                },
+            },
+        });
+
+        await generate();
+        const content = await readOutput('plain.types.ts');
+
+        expect(content).toContain('status: Status;');
+        expect(content).not.toContain('Status | null');
+    });
+
+    it('emits a nullable item type for an array of nullable $refs', async () => {
+        // Nullable on the ITEMS rather than on the array, which is a different
+        // position in the schema and resolves through a different call.
+        await writeSchema('lists.json', {
+            title: 'Lists',
+            type: 'object',
+            properties: {
+                Slot: { type: 'object', required: ['at'], properties: { at: { type: 'string' } } },
+                Day: {
+                    type: 'object',
+                    required: ['slots'],
+                    properties: {
+                        slots: { type: 'array', items: { $ref: '#/properties/Slot', nullable: true } },
+                    },
+                },
+            },
+        });
+
+        await generate();
+        const content = await readOutput('lists.types.ts');
+
+        expect(content).toMatch(/slots: \(?Slot \| null\)?\[\];/);
+    });
+
+    it('keeps nullable in the registered runtime schema, as it already did', async () => {
+        // The runtime half was never broken — Ajv consumers already saw the
+        // nullable. Pinned so a fix to the TypeScript cannot regress it.
+        await writeSchema('runtime.json', {
+            title: 'Runtime',
+            type: 'object',
+            properties: {
+                State: { type: 'string', enum: ['A', 'B'] },
+                Holder: {
+                    type: 'object',
+                    required: ['state'],
+                    properties: { state: { $ref: '#/properties/State', nullable: true } },
+                },
+            },
+        });
+
+        await generate();
+        const content = await readOutput('runtime.types.ts');
+
+        expect(content).toContain('"nullable": true');
+    });
+});

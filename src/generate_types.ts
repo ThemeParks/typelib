@@ -158,7 +158,17 @@ function getTypeFromSchema(schema: JSONSchema, rootSchema: JSONSchema, registry:
     if (schema.$ref) {
         try {
             const resolved = resolveReference(schema.$ref, rootSchema, registry, tracker);
-            return resolved.typeName;
+            // `nullable` beside a `$ref` used to be dropped right here: this
+            // branch returned the resolved name and never looked at the rest of
+            // the schema, unlike every other branch below, which all honour it.
+            //
+            // The runtime JSON Schema kept the keyword, so validating consumers
+            // were always right while the emitted TypeScript told the compiler
+            // the null could not happen — and for four fields of the live-data
+            // contract it does, and has since those fields existed. A type
+            // wrong in the direction of "never null" is worse than no type: it
+            // makes the null check the caller needs look like dead code.
+            return schema.nullable ? `${resolved.typeName} | null` : resolved.typeName;
         } catch (err) {
             error(`Error resolving reference: ${schema.$ref}`, err);
             return 'any';

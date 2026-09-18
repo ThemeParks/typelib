@@ -50,7 +50,10 @@
                     "type": "object",
                     "properties": {
                         "waitTime": {
-                            "type": ["number", "null"],
+                            "type": [
+                                "number",
+                                "null"
+                            ],
                             "description": "Current standby wait time in minutes; null when the queue exists but no current value is available"
                         }
                     },
@@ -80,7 +83,8 @@
                     "properties": {
                         "state": {
                             "$ref": "#/properties/ReturnTimeState",
-                            "description": "State of return time availability"
+                            "description": "State of return time availability",
+                            "nullable": true
                         },
                         "returnStart": {
                             "type": "string",
@@ -108,7 +112,8 @@
                     "properties": {
                         "state": {
                             "$ref": "#/properties/ReturnTimeState",
-                            "description": "State of return time availability"
+                            "description": "State of return time availability",
+                            "nullable": true
                         },
                         "returnStart": {
                             "type": "string",
@@ -124,7 +129,8 @@
                         },
                         "price": {
                             "$ref": "#/properties/PriceData",
-                            "description": "Price information for paid return time"
+                            "description": "Price information for paid return time",
+                            "nullable": true
                         }
                     },
                     "description": "Paid Return Time queue type for attractions that offer it. You pay an additional cost to get a return time to come back and ride the attraction later, instead of waiting in a physical line."
@@ -141,7 +147,8 @@
                     "properties": {
                         "allocationStatus": {
                             "$ref": "#/properties/BoardingGroupState",
-                            "description": "State of boarding group availability"
+                            "description": "State of boarding group availability",
+                            "nullable": true
                         },
                         "currentGroupStart": {
                             "type": "number",
