@@ -94,7 +94,15 @@ function resolve(schema: Schema, seen: string[] = []): Schema {
     if (seen.includes(name)) throw new Error(`$ref cycle: ${[...seen, name].join(' -> ')}`);
     const target = getTypeSchema(name) as Schema | undefined;
     if (!target) throw new Error(`schema ${name} is referenced but not registered`);
-    return resolve(target, [...seen, name]);
+
+    // `nullable` sits BESIDE the `$ref`, not inside the target — the target is
+    // shared by everything that references it, and only some of those accept
+    // null. Dropping the sibling keyword on resolution is the same mistake the
+    // generator made in getTypeFromSchema, and it surfaced the same way:
+    // marking the four live-data fields nullable fixed the emitted types while
+    // this walker went on reporting them as drift.
+    const resolved = resolve(target, [...seen, name]);
+    return schema.nullable === true ? { ...resolved, nullable: true } : resolved;
 }
 
 /**
@@ -200,43 +208,6 @@ function violations(value: unknown, schema: Schema, path: string): string[] {
     return out;
 }
 
-/**
- * Divergences between what the API sends and what this package declares, which
- * are KNOWN, OPEN, and not this file's to decide.
- *
- * A queue that ends writes `null` into fields the shared queue schema declares
- * non-nullable. Verified on a real response: `PAID_RETURN_TIME` and
- * `RETURN_TIME` both arrive with `state: null`, and `PAID_RETURN_TIME` with
- * `price: null`, while the schema has `state` as a `ReturnTimeState` enum and
- * `price` as a `PriceData` object. A consumer who trusts the type and reads
- * `state.toUpperCase()` gets a runtime error.
- *
- * This is not a typo to patch here. The same `LiveQueue` schema serves
- * `/v1/entity/{id}/live`, so widening it is an API-wide decision about how an
- * ended queue is represented — and that decision is open and belongs to the
- * owner, not to a test.
- *
- * So the divergence is ENUMERATED rather than tolerated. Each entry is a
- * specific field, the test asserts that every entry is still real, and
- * anything not listed fails as normal drift. When the decision lands, deleting
- * the entry is the change that proves the fix.
- */
-const KNOWN_DIVERGENCES = [
-    'queue.RETURN_TIME.state',
-    'queue.PAID_RETURN_TIME.state',
-    'queue.PAID_RETURN_TIME.price',
-] as const;
-
-/** Whether `problem` is one of the enumerated known divergences. */
-function isKnownDivergence(problem: string): boolean {
-    // Matched on the field path plus the null claim specifically, so the
-    // allowance covers ONLY "the server sent null here" and not some other
-    // future drift on the same field.
-    return KNOWN_DIVERGENCES.some(
-        (field) => problem.includes(`.${field}:`) && problem.includes('null is null'),
-    );
-}
-
 /** Schema name -> the fixture that must satisfy it. */
 const CONTRACTS: Array<[typeName: string, fixture: keyof Fixtures]> = [
     ['HistoryEnvelope', 'entity-history'],
@@ -261,26 +232,35 @@ describe('the published history types describe what the server sends', () => {
         const schema = getTypeSchema(typeName) as Schema | undefined;
         expect(schema, `${typeName} is not registered`).toBeDefined();
 
-        const problems = violations(fixtures[fixture], schema!, typeName)
-            .filter((p) => !isKnownDivergence(p));
+        // No allowance list any more: the four live-data fields that sent
+        // unrepresentable nulls are marked nullable, and the generator honours
+        // nullable on a $ref, so a real response has nothing left to excuse.
+        const problems = violations(fixtures[fixture], schema!, typeName);
 
         expect(problems, `\n  ${problems.join('\n  ')}\n`).toEqual([]);
     });
 
-    it('every enumerated divergence is still real', () => {
-        // The allowance list is the dangerous part of this file: an entry that
-        // stops being true silently hides a field the package could now
-        // describe honestly. So the list is checked in the other direction —
-        // each entry must still be produced by a real fixture.
-        const all = CONTRACTS.flatMap(([typeName, fixture]) =>
-            violations(fixtures[fixture], getTypeSchema(typeName) as Schema, typeName));
-
-        const stale = KNOWN_DIVERGENCES.filter(
-            (field) => !all.some((p) => p.includes(`.${field}:`) && p.includes('null is null')),
+    it('accepts a null in each field that used to be unrepresentable', () => {
+        // The four queue fields that used to send unrepresentable nulls,
+        // asserted from the other side. Deleting the allowance list proves nothing on its own —
+        // a schema that had stopped describing these fields at all would also
+        // pass. So the nulls the API really sends are named here, and each must
+        // be ACCEPTED rather than merely unreported.
+        const raw = fixtures['queue-paid-return-time'] as {
+            history: Array<{ queue?: Record<string, Record<string, unknown>> }>;
+        };
+        const withNulls = raw.history.filter(
+            (row) => row.queue?.PAID_RETURN_TIME?.state === null || row.queue?.RETURN_TIME?.state === null,
         );
 
-        expect(stale, `\n  no longer diverge — remove from KNOWN_DIVERGENCES:\n  ${stale.join('\n  ')}\n`)
-            .toEqual([]);
+        // If this is empty the fixture stopped exercising the case and the
+        // assertion below would be vacuous.
+        expect(withNulls.length).toBeGreaterThan(0);
+
+        const queueSchema = getTypeSchema('LiveQueue') as Schema;
+        for (const row of withNulls) {
+            expect(violations(row.queue, queueSchema, 'LiveQueue')).toEqual([]);
+        }
     });
 
     it('registers every shape the schema declares', () => {

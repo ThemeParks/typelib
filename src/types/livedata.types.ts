@@ -130,7 +130,7 @@ export type LiveQueue = {
     RETURN_TIME?: {
     
     /** State of return time availability */
-    state: ReturnTimeState;
+    state: ReturnTimeState | null;
     
     /** Start time of return window */
     returnStart: string | null;
@@ -143,7 +143,7 @@ export type LiveQueue = {
     PAID_RETURN_TIME?: {
     
     /** State of return time availability */
-    state: ReturnTimeState;
+    state: ReturnTimeState | null;
     
     /** Start time of return window */
     returnStart: string | null;
@@ -152,14 +152,14 @@ export type LiveQueue = {
     returnEnd: string | null;
     
     /** Price information for paid return time */
-    price: PriceData;
+    price: PriceData | null;
 };
     
     /** Boarding Group queue type for attractions that offer it. You get allocated a boarding group number and wait until your group is called. No additional cost. */
     BOARDING_GROUP?: {
     
     /** State of boarding group availability */
-    allocationStatus: BoardingGroupState;
+    allocationStatus: BoardingGroupState | null;
     
     /** Current boarding group start number */
     currentGroupStart: number | null;
@@ -314,7 +314,8 @@ registerTypeSchema("LiveQueue", {
       "properties": {
         "state": {
           "$ref": "#/properties/ReturnTimeState",
-          "description": "State of return time availability"
+          "description": "State of return time availability",
+          "nullable": true
         },
         "returnStart": {
           "type": "string",
@@ -342,7 +343,8 @@ registerTypeSchema("LiveQueue", {
       "properties": {
         "state": {
           "$ref": "#/properties/ReturnTimeState",
-          "description": "State of return time availability"
+          "description": "State of return time availability",
+          "nullable": true
         },
         "returnStart": {
           "type": "string",
@@ -358,7 +360,8 @@ registerTypeSchema("LiveQueue", {
         },
         "price": {
           "$ref": "#/properties/PriceData",
-          "description": "Price information for paid return time"
+          "description": "Price information for paid return time",
+          "nullable": true
         }
       },
       "description": "Paid Return Time queue type for attractions that offer it. You pay an additional cost to get a return time to come back and ride the attraction later, instead of waiting in a physical line."
@@ -375,7 +378,8 @@ registerTypeSchema("LiveQueue", {
       "properties": {
         "allocationStatus": {
           "$ref": "#/properties/BoardingGroupState",
-          "description": "State of boarding group availability"
+          "description": "State of boarding group availability",
+          "nullable": true
         },
         "currentGroupStart": {
           "type": "number",
