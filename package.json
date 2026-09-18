@@ -7,6 +7,10 @@
     "type": "module",
     "license": "MIT",
     "description": "TypeScript definitions for ThemeParks.wiki API",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/ThemeParks/typelib.git"
+    },
     "keywords": [
         "typescript",
         "types",
