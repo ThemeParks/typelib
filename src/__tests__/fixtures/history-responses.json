@@ -1,0 +1,990 @@
+{
+  "entity-history": {
+    "coverage": {
+      "firstRecordedAt": "2021-07-03"
+    },
+    "destinationId": "e957da41-3552-4cf6-b636-5babc5cbc4e5",
+    "entityType": "ATTRACTION",
+    "history": [
+      {
+        "changed": [
+          "queue.RETURN_TIME.state",
+          "queue.RETURN_TIME.returnStart",
+          "queue.RETURN_TIME.returnEnd"
+        ],
+        "queue": {
+          "RETURN_TIME": {
+            "returnEnd": "2026-09-15T10:30:00-04:00",
+            "returnStart": "2026-09-15T09:30:00-04:00",
+            "state": "AVAILABLE"
+          },
+          "STANDBY": {
+            "waitTime": null
+          }
+        },
+        "status": "CLOSED",
+        "time": "2026-09-15T09:43:15Z"
+      },
+      {
+        "changed": [
+          "status"
+        ],
+        "queue": {
+          "RETURN_TIME": {
+            "returnEnd": "2026-09-15T10:30:00-04:00",
+            "returnStart": "2026-09-15T09:30:00-04:00",
+            "state": "AVAILABLE"
+          },
+          "STANDBY": {
+            "waitTime": null
+          }
+        },
+        "status": "OPERATING",
+        "time": "2026-09-15T12:30:50Z"
+      },
+      {
+        "changed": [
+          "queue.STANDBY.waitTime"
+        ],
+        "queue": {
+          "RETURN_TIME": {
+            "returnEnd": "2026-09-15T10:30:00-04:00",
+            "returnStart": "2026-09-15T09:30:00-04:00",
+            "state": "AVAILABLE"
+          },
+          "STANDBY": {
+            "waitTime": 15
+          }
+        },
+        "status": "OPERATING",
+        "time": "2026-09-15T12:33:48Z"
+      },
+      {
+        "changed": [
+          "queue.RETURN_TIME.returnStart",
+          "queue.RETURN_TIME.returnEnd"
+        ],
+        "queue": {
+          "RETURN_TIME": {
+            "returnEnd": "2026-09-15T10:35:00-04:00",
+            "returnStart": "2026-09-15T09:35:00-04:00",
+            "state": "AVAILABLE"
+          },
+          "STANDBY": {
+            "waitTime": 15
+          }
+        },
+        "status": "OPERATING",
+        "time": "2026-09-15T12:47:35Z"
+      },
+      {
+        "changed": [
+          "queue.STANDBY.waitTime"
+        ],
+        "queue": {
+          "RETURN_TIME": {
+            "returnEnd": "2026-09-15T10:35:00-04:00",
+            "returnStart": "2026-09-15T09:35:00-04:00",
+            "state": "AVAILABLE"
+          },
+          "STANDBY": {
+            "waitTime": 25
+          }
+        },
+        "status": "OPERATING",
+        "time": "2026-09-15T12:49:46Z"
+      },
+      {
+        "changed": [
+          "queue.STANDBY.waitTime"
+        ],
+        "queue": {
+          "RETURN_TIME": {
+            "returnEnd": "2026-09-15T10:35:00-04:00",
+            "returnStart": "2026-09-15T09:35:00-04:00",
+            "state": "AVAILABLE"
+          },
+          "STANDBY": {
+            "waitTime": 35
+          }
+        },
+        "status": "OPERATING",
+        "time": "2026-09-15T12:56:50Z"
+      }
+    ],
+    "id": "b2260923-9315-40fd-9c6b-44dd811dbe64",
+    "name": "Space Mountain",
+    "next": null,
+    "opening": {
+      "queue": {
+        "RETURN_TIME": {
+          "returnEnd": null,
+          "returnStart": null,
+          "state": "FINISHED"
+        },
+        "STANDBY": {
+          "waitTime": null
+        }
+      },
+      "status": "CLOSED",
+      "time": "2026-09-15T04:00:00Z"
+    },
+    "parentId": "75ea578a-adc8-4116-a54d-dccb60765ef9",
+    "range": {
+      "from": "2026-09-15",
+      "to": "2026-09-15"
+    },
+    "timezone": "America/New_York"
+  },
+  "entity-history-coverage": {
+    "destinationId": "e957da41-3552-4cf6-b636-5babc5cbc4e5",
+    "entityType": "ATTRACTION",
+    "firstRecordedAt": "2021-07-03",
+    "id": "b2260923-9315-40fd-9c6b-44dd811dbe64",
+    "kinds": {
+      "queue.PAID_RETURN_TIME": {
+        "first": "2021-10-19",
+        "last": "2022-02-24"
+      },
+      "queue.RETURN_TIME": {
+        "first": "2021-12-19",
+        "last": "2026-09-16"
+      },
+      "queue.STANDBY": {
+        "first": "2021-07-03",
+        "last": "2026-09-16"
+      },
+      "status": {
+        "first": "2021-07-03",
+        "last": "2026-09-16"
+      }
+    },
+    "lastRecordedAt": "2026-09-16",
+    "name": "Space Mountain",
+    "parentId": "75ea578a-adc8-4116-a54d-dccb60765ef9",
+    "retrievableThrough": "2026-09-18",
+    "timezone": "America/New_York"
+  },
+  "entity-history-daily": {
+    "coverage": {
+      "firstRecordedAt": "2021-07-03"
+    },
+    "days": [
+      {
+        "changes": 116,
+        "date": "2026-09-01",
+        "downMinutes": 0,
+        "firstOperatingAt": "2026-09-01T12:31:10Z",
+        "lastClosedAt": "2026-09-01T22:00:22Z",
+        "operatingMinutes": 898,
+        "standby": {
+          "max": 25,
+          "mean": 9,
+          "min": 5,
+          "p50": 5,
+          "p90": 20
+        }
+      },
+      {
+        "changes": 192,
+        "date": "2026-09-02",
+        "downMinutes": 0,
+        "firstOperatingAt": "2026-09-02T04:00:00Z",
+        "lastClosedAt": "2026-09-03T02:00:22Z",
+        "operatingMinutes": 811,
+        "standby": {
+          "max": 20,
+          "mean": 11,
+          "min": 5,
+          "p50": 10,
+          "p90": 15
+        }
+      },
+      {
+        "changes": 184,
+        "date": "2026-09-03",
+        "downMinutes": 0,
+        "firstOperatingAt": "2026-09-03T12:30:30Z",
+        "lastClosedAt": "2026-09-04T02:00:32Z",
+        "operatingMinutes": 810,
+        "standby": {
+          "max": 35,
+          "mean": 17,
+          "min": 5,
+          "p50": 15,
+          "p90": 30
+        }
+      },
+      {
+        "changes": 157,
+        "date": "2026-09-04",
+        "downMinutes": 55,
+        "firstOperatingAt": "2026-09-04T12:30:47Z",
+        "lastClosedAt": "2026-09-04T22:00:45Z",
+        "operatingMinutes": 844,
+        "standby": {
+          "max": 35,
+          "mean": 17,
+          "min": 0,
+          "p50": 15,
+          "p90": 30
+        }
+      }
+    ],
+    "destinationId": "e957da41-3552-4cf6-b636-5babc5cbc4e5",
+    "entityType": "ATTRACTION",
+    "id": "b2260923-9315-40fd-9c6b-44dd811dbe64",
+    "name": "Space Mountain",
+    "next": null,
+    "parentId": "75ea578a-adc8-4116-a54d-dccb60765ef9",
+    "range": {
+      "from": "2026-09-01",
+      "to": "2026-09-15"
+    },
+    "timezone": "America/New_York"
+  },
+  "error-invalid-date": {
+    "error": {
+      "message": "from must be a calendar day (YYYY-MM-DD) or an RFC 3339 instant with an offset (e.g. 2026-09-13T14:00:00Z).",
+      "type": "INVALID_DATE"
+    }
+  },
+  "error-invalid-range": {
+    "error": {
+      "message": "to must not be before from.",
+      "type": "INVALID_RANGE"
+    }
+  },
+  "error-not-found": {
+    "error": {
+      "message": "Entity not found",
+      "type": "NOT_FOUND"
+    }
+  },
+  "error-range-too-long": {
+    "error": {
+      "message": "A history call covers at most 31 park-local days (2026-01-01 to 2026-09-15 is 258). Ask for a shorter range.",
+      "type": "RANGE_TOO_LONG"
+    }
+  },
+  "park-history": {
+    "destinationId": "e957da41-3552-4cf6-b636-5babc5cbc4e5",
+    "entities": [
+      {
+        "coverage": {
+          "firstRecordedAt": "2021-07-03"
+        },
+        "entityType": "ATTRACTION",
+        "history": [
+          {
+            "changed": [
+              "queue.RETURN_TIME.state",
+              "queue.RETURN_TIME.returnStart",
+              "queue.RETURN_TIME.returnEnd"
+            ],
+            "queue": {
+              "RETURN_TIME": {
+                "returnEnd": "2026-09-15T10:20:00-04:00",
+                "returnStart": "2026-09-15T09:20:00-04:00",
+                "state": "AVAILABLE"
+              },
+              "STANDBY": {
+                "waitTime": null
+              }
+            },
+            "status": "CLOSED",
+            "time": "2026-09-15T09:43:15Z"
+          },
+          {
+            "changed": [
+              "status",
+              "queue.STANDBY.waitTime",
+              "queue.RETURN_TIME.returnStart",
+              "queue.RETURN_TIME.returnEnd"
+            ],
+            "queue": {
+              "RETURN_TIME": {
+                "returnEnd": "2026-09-15T10:45:00-04:00",
+                "returnStart": "2026-09-15T09:45:00-04:00",
+                "state": "AVAILABLE"
+              },
+              "STANDBY": {
+                "waitTime": 5
+              }
+            },
+            "status": "OPERATING",
+            "time": "2026-09-15T12:30:50Z"
+          },
+          {
+            "changed": [
+              "queue.RETURN_TIME.returnStart",
+              "queue.RETURN_TIME.returnEnd"
+            ],
+            "queue": {
+              "RETURN_TIME": {
+                "returnEnd": "2026-09-15T10:50:00-04:00",
+                "returnStart": "2026-09-15T09:50:00-04:00",
+                "state": "AVAILABLE"
+              },
+              "STANDBY": {
+                "waitTime": 5
+              }
+            },
+            "status": "OPERATING",
+            "time": "2026-09-15T12:57:30Z"
+          },
+          {
+            "changed": [
+              "queue.RETURN_TIME.returnStart",
+              "queue.RETURN_TIME.returnEnd"
+            ],
+            "queue": {
+              "RETURN_TIME": {
+                "returnEnd": "2026-09-15T10:45:00-04:00",
+                "returnStart": "2026-09-15T09:45:00-04:00",
+                "state": "AVAILABLE"
+              },
+              "STANDBY": {
+                "waitTime": 5
+              }
+            },
+            "status": "OPERATING",
+            "time": "2026-09-15T13:03:20Z"
+          }
+        ],
+        "id": "f5aad2d4-a419-4384-bd9a-42f86385c750",
+        "name": "\"it's a small world\"",
+        "opening": {
+          "queue": {
+            "RETURN_TIME": {
+              "returnEnd": null,
+              "returnStart": null,
+              "state": "FINISHED"
+            },
+            "STANDBY": {
+              "waitTime": null
+            }
+          },
+          "status": "CLOSED",
+          "time": "2026-09-15T04:00:00Z"
+        }
+      },
+      {
+        "coverage": {
+          "firstRecordedAt": "2021-10-05"
+        },
+        "entityType": "ATTRACTION",
+        "history": [
+          {
+            "changed": [
+              "status"
+            ],
+            "queue": {
+              "STANDBY": {
+                "waitTime": null
+              }
+            },
+            "status": "OPERATING",
+            "time": "2026-09-15T16:00:56Z"
+          },
+          {
+            "changed": [
+              "status"
+            ],
+            "queue": {
+              "STANDBY": {
+                "waitTime": null
+              }
+            },
+            "status": "CLOSED",
+            "time": "2026-09-15T21:00:50Z"
+          }
+        ],
+        "id": "de737ffc-306b-4f32-8bbb-34e5d370ec8f",
+        "name": "A Pirate's Adventure ~ Treasures of the Seven Seas",
+        "opening": {
+          "queue": {
+            "STANDBY": {
+              "waitTime": null
+            }
+          },
+          "status": "CLOSED",
+          "time": "2026-09-15T04:00:00Z"
+        }
+      },
+      {
+        "coverage": {
+          "firstRecordedAt": "2021-07-03"
+        },
+        "entityType": "ATTRACTION",
+        "history": [
+          {
+            "changed": [
+              "status",
+              "queue.STANDBY.waitTime"
+            ],
+            "queue": {
+              "STANDBY": {
+                "waitTime": 5
+              }
+            },
+            "status": "OPERATING",
+            "time": "2026-09-15T12:30:50Z"
+          },
+          {
+            "changed": [
+              "queue.STANDBY.waitTime"
+            ],
+            "queue": {
+              "STANDBY": {
+                "waitTime": 10
+              }
+            },
+            "status": "OPERATING",
+            "time": "2026-09-15T13:39:48Z"
+          },
+          {
+            "changed": [
+              "queue.STANDBY.waitTime"
+            ],
+            "queue": {
+              "STANDBY": {
+                "waitTime": 5
+              }
+            },
+            "status": "OPERATING",
+            "time": "2026-09-15T13:51:47Z"
+          },
+          {
+            "changed": [
+              "queue.STANDBY.waitTime"
+            ],
+            "queue": {
+              "STANDBY": {
+                "waitTime": 10
+              }
+            },
+            "status": "OPERATING",
+            "time": "2026-09-15T14:06:49Z"
+          }
+        ],
+        "id": "d9d12438-d999-4482-894b-8955fdb20ccf",
+        "name": "Astro Orbiter",
+        "opening": {
+          "queue": {
+            "STANDBY": {
+              "waitTime": null
+            }
+          },
+          "status": "CLOSED",
+          "time": "2026-09-15T04:00:00Z"
+        }
+      }
+    ],
+    "entityType": "PARK",
+    "id": "75ea578a-adc8-4116-a54d-dccb60765ef9",
+    "name": "Magic Kingdom Park",
+    "next": null,
+    "parentId": "e957da41-3552-4cf6-b636-5babc5cbc4e5",
+    "range": {
+      "from": "2026-09-15",
+      "to": "2026-09-15"
+    },
+    "timezone": "America/New_York"
+  },
+  "park-history-daily": {
+    "destinationId": "e957da41-3552-4cf6-b636-5babc5cbc4e5",
+    "entities": [
+      {
+        "coverage": {
+          "firstRecordedAt": "2021-07-03"
+        },
+        "days": [
+          {
+            "changes": 126,
+            "date": "2026-09-15",
+            "downMinutes": 0,
+            "firstOperatingAt": "2026-09-15T12:30:50Z",
+            "lastClosedAt": "2026-09-15T22:01:01Z",
+            "operatingMinutes": 899,
+            "standby": {
+              "max": 15,
+              "mean": 5,
+              "min": 0,
+              "p50": 5,
+              "p90": 5
+            }
+          }
+        ],
+        "entityType": "ATTRACTION",
+        "id": "f5aad2d4-a419-4384-bd9a-42f86385c750",
+        "name": "\"it's a small world\""
+      },
+      {
+        "coverage": {
+          "firstRecordedAt": "2021-10-05"
+        },
+        "days": [
+          {
+            "changes": 2,
+            "date": "2026-09-15",
+            "downMinutes": 0,
+            "firstOperatingAt": "2026-09-15T16:00:56Z",
+            "lastClosedAt": "2026-09-15T21:00:50Z",
+            "operatingMinutes": 300
+          }
+        ],
+        "entityType": "ATTRACTION",
+        "id": "de737ffc-306b-4f32-8bbb-34e5d370ec8f",
+        "name": "A Pirate's Adventure ~ Treasures of the Seven Seas"
+      },
+      {
+        "coverage": {
+          "firstRecordedAt": "2021-07-03"
+        },
+        "days": [
+          {
+            "changes": 17,
+            "date": "2026-09-15",
+            "downMinutes": 64,
+            "firstOperatingAt": "2026-09-15T12:30:50Z",
+            "lastClosedAt": "2026-09-15T22:01:01Z",
+            "operatingMinutes": 835,
+            "standby": {
+              "max": 25,
+              "mean": 7,
+              "min": 0,
+              "p50": 5,
+              "p90": 15
+            }
+          }
+        ],
+        "entityType": "ATTRACTION",
+        "id": "d9d12438-d999-4482-894b-8955fdb20ccf",
+        "name": "Astro Orbiter"
+      }
+    ],
+    "entityType": "PARK",
+    "id": "75ea578a-adc8-4116-a54d-dccb60765ef9",
+    "name": "Magic Kingdom Park",
+    "next": null,
+    "parentId": "e957da41-3552-4cf6-b636-5babc5cbc4e5",
+    "range": {
+      "from": "2026-09-15",
+      "to": "2026-09-15"
+    },
+    "timezone": "America/New_York"
+  },
+  "queue-paid-return-time": {
+    "coverage": {
+      "firstRecordedAt": "2021-07-03"
+    },
+    "destinationId": "89db5d43-c434-4097-b71f-f6869f495a22",
+    "entityType": "ATTRACTION",
+    "history": [
+      {
+        "changed": [
+          "status",
+          "queue.STANDBY.waitTime"
+        ],
+        "queue": {
+          "PAID_RETURN_TIME": {
+            "price": null,
+            "returnEnd": null,
+            "returnStart": null,
+            "state": null
+          },
+          "RETURN_TIME": {
+            "returnEnd": null,
+            "returnStart": null,
+            "state": null
+          },
+          "STANDBY": {
+            "waitTime": 20
+          }
+        },
+        "status": "OPERATING",
+        "time": "2026-09-15T15:03:22Z"
+      },
+      {
+        "changed": [
+          "queue.STANDBY.waitTime"
+        ],
+        "queue": {
+          "PAID_RETURN_TIME": {
+            "price": null,
+            "returnEnd": null,
+            "returnStart": null,
+            "state": null
+          },
+          "RETURN_TIME": {
+            "returnEnd": null,
+            "returnStart": null,
+            "state": null
+          },
+          "STANDBY": {
+            "waitTime": 15
+          }
+        },
+        "status": "OPERATING",
+        "time": "2026-09-15T15:12:53Z"
+      },
+      {
+        "changed": [
+          "queue.RETURN_TIME.state"
+        ],
+        "queue": {
+          "PAID_RETURN_TIME": {
+            "price": null,
+            "returnEnd": null,
+            "returnStart": null,
+            "state": null
+          },
+          "RETURN_TIME": {
+            "returnEnd": null,
+            "returnStart": null,
+            "state": "TEMP_FULL"
+          },
+          "STANDBY": {
+            "waitTime": 15
+          }
+        },
+        "status": "OPERATING",
+        "time": "2026-09-15T15:17:08Z"
+      },
+      {
+        "changed": [
+          "queue.STANDBY.waitTime"
+        ],
+        "queue": {
+          "PAID_RETURN_TIME": {
+            "price": null,
+            "returnEnd": null,
+            "returnStart": null,
+            "state": null
+          },
+          "RETURN_TIME": {
+            "returnEnd": null,
+            "returnStart": null,
+            "state": "TEMP_FULL"
+          },
+          "STANDBY": {
+            "waitTime": 45
+          }
+        },
+        "status": "OPERATING",
+        "time": "2026-09-15T15:53:51Z"
+      }
+    ],
+    "id": "1e16afdd-15e3-4e4a-b3af-8aeebd7534f8",
+    "name": "E.T. Adventure",
+    "next": null,
+    "opening": {
+      "queue": {
+        "PAID_RETURN_TIME": {
+          "price": null,
+          "returnEnd": null,
+          "returnStart": null,
+          "state": null
+        },
+        "RETURN_TIME": {
+          "returnEnd": null,
+          "returnStart": null,
+          "state": null
+        },
+        "STANDBY": {
+          "waitTime": null
+        }
+      },
+      "status": "CLOSED",
+      "time": "2026-09-15T04:00:00Z"
+    },
+    "parentId": "eb3f4560-2383-4a36-9152-6b3e5ed6bc57",
+    "range": {
+      "from": "2026-09-15",
+      "to": "2026-09-15"
+    },
+    "timezone": "America/New_York"
+  },
+  "queue-paid-standby": {
+    "coverage": {
+      "firstRecordedAt": "2026-08-24"
+    },
+    "destinationId": "89db5d43-c434-4097-b71f-f6869f495a22",
+    "entityType": "ATTRACTION",
+    "history": [],
+    "id": "41c4491c-f3d9-41e5-963c-21a10a255b39",
+    "name": "Cybergoria",
+    "next": null,
+    "opening": {
+      "queue": {
+        "PAID_STANDBY": {
+          "waitTime": null
+        }
+      },
+      "status": "CLOSED",
+      "time": "2026-09-15T04:00:00Z"
+    },
+    "parentId": "eb3f4560-2383-4a36-9152-6b3e5ed6bc57",
+    "range": {
+      "from": "2026-09-15",
+      "to": "2026-09-15"
+    },
+    "timezone": "America/New_York"
+  },
+  "queue-single-rider": {
+    "coverage": {
+      "firstRecordedAt": "2021-07-03"
+    },
+    "destinationId": "89db5d43-c434-4097-b71f-f6869f495a22",
+    "entityType": "ATTRACTION",
+    "history": [
+      {
+        "changed": [
+          "status",
+          "queue.STANDBY.waitTime"
+        ],
+        "queue": {
+          "SINGLE_RIDER": {
+            "waitTime": null
+          },
+          "STANDBY": {
+            "waitTime": 15
+          }
+        },
+        "status": "OPERATING",
+        "time": "2026-09-15T14:04:13Z"
+      },
+      {
+        "changed": [
+          "queue.STANDBY.waitTime"
+        ],
+        "queue": {
+          "SINGLE_RIDER": {
+            "waitTime": null
+          },
+          "STANDBY": {
+            "waitTime": 25
+          }
+        },
+        "status": "OPERATING",
+        "time": "2026-09-15T14:43:07Z"
+      },
+      {
+        "changed": [
+          "queue.STANDBY.waitTime"
+        ],
+        "queue": {
+          "SINGLE_RIDER": {
+            "waitTime": null
+          },
+          "STANDBY": {
+            "waitTime": 35
+          }
+        },
+        "status": "OPERATING",
+        "time": "2026-09-15T14:48:17Z"
+      },
+      {
+        "changed": [
+          "queue.STANDBY.waitTime"
+        ],
+        "queue": {
+          "SINGLE_RIDER": {
+            "waitTime": null
+          },
+          "STANDBY": {
+            "waitTime": 45
+          }
+        },
+        "status": "OPERATING",
+        "time": "2026-09-15T15:13:15Z"
+      }
+    ],
+    "id": "70ac72a3-9675-4c41-a1b1-e4801072927a",
+    "name": "Harry Potter and the Escape from Gringotts\u2122",
+    "next": null,
+    "opening": {
+      "queue": {
+        "SINGLE_RIDER": {
+          "waitTime": null
+        },
+        "STANDBY": {
+          "waitTime": null
+        }
+      },
+      "status": "CLOSED",
+      "time": "2026-09-15T04:00:00Z"
+    },
+    "parentId": "eb3f4560-2383-4a36-9152-6b3e5ed6bc57",
+    "range": {
+      "from": "2026-09-15",
+      "to": "2026-09-15"
+    },
+    "timezone": "America/New_York"
+  },
+  "showtimes": {
+    "coverage": {
+      "firstRecordedAt": "2026-05-25"
+    },
+    "destinationId": "89db5d43-c434-4097-b71f-f6869f495a22",
+    "entityType": "SHOW",
+    "history": [
+      {
+        "changed": [
+          "showtimes"
+        ],
+        "showtimes": [
+          {
+            "endTime": "2026-09-15T10:25:00-04:00",
+            "startTime": "2026-09-15T10:25:00-04:00",
+            "type": "Performance Time"
+          },
+          {
+            "endTime": "2026-09-15T11:25:00-04:00",
+            "startTime": "2026-09-15T11:25:00-04:00",
+            "type": "Performance Time"
+          },
+          {
+            "endTime": "2026-09-15T12:25:00-04:00",
+            "startTime": "2026-09-15T12:25:00-04:00",
+            "type": "Performance Time"
+          },
+          {
+            "endTime": "2026-09-15T13:45:00-04:00",
+            "startTime": "2026-09-15T13:45:00-04:00",
+            "type": "Performance Time"
+          },
+          {
+            "endTime": "2026-09-15T14:45:00-04:00",
+            "startTime": "2026-09-15T14:45:00-04:00",
+            "type": "Performance Time"
+          },
+          {
+            "endTime": "2026-09-15T15:45:00-04:00",
+            "startTime": "2026-09-15T15:45:00-04:00",
+            "type": "Performance Time"
+          }
+        ],
+        "status": "CLOSED",
+        "time": "2026-09-15T10:17:35Z"
+      },
+      {
+        "changed": [
+          "status"
+        ],
+        "showtimes": [
+          {
+            "endTime": "2026-09-15T10:25:00-04:00",
+            "startTime": "2026-09-15T10:25:00-04:00",
+            "type": "Performance Time"
+          },
+          {
+            "endTime": "2026-09-15T11:25:00-04:00",
+            "startTime": "2026-09-15T11:25:00-04:00",
+            "type": "Performance Time"
+          },
+          {
+            "endTime": "2026-09-15T12:25:00-04:00",
+            "startTime": "2026-09-15T12:25:00-04:00",
+            "type": "Performance Time"
+          },
+          {
+            "endTime": "2026-09-15T13:45:00-04:00",
+            "startTime": "2026-09-15T13:45:00-04:00",
+            "type": "Performance Time"
+          },
+          {
+            "endTime": "2026-09-15T14:45:00-04:00",
+            "startTime": "2026-09-15T14:45:00-04:00",
+            "type": "Performance Time"
+          },
+          {
+            "endTime": "2026-09-15T15:45:00-04:00",
+            "startTime": "2026-09-15T15:45:00-04:00",
+            "type": "Performance Time"
+          }
+        ],
+        "status": "OPERATING",
+        "time": "2026-09-15T14:00:47Z"
+      },
+      {
+        "changed": [
+          "showtimes"
+        ],
+        "showtimes": [
+          {
+            "endTime": "2026-09-15T11:25:00-04:00",
+            "startTime": "2026-09-15T11:25:00-04:00",
+            "type": "Performance Time"
+          },
+          {
+            "endTime": "2026-09-15T12:25:00-04:00",
+            "startTime": "2026-09-15T12:25:00-04:00",
+            "type": "Performance Time"
+          },
+          {
+            "endTime": "2026-09-15T13:45:00-04:00",
+            "startTime": "2026-09-15T13:45:00-04:00",
+            "type": "Performance Time"
+          },
+          {
+            "endTime": "2026-09-15T14:45:00-04:00",
+            "startTime": "2026-09-15T14:45:00-04:00",
+            "type": "Performance Time"
+          },
+          {
+            "endTime": "2026-09-15T15:45:00-04:00",
+            "startTime": "2026-09-15T15:45:00-04:00",
+            "type": "Performance Time"
+          }
+        ],
+        "status": "OPERATING",
+        "time": "2026-09-15T14:25:50Z"
+      },
+      {
+        "changed": [
+          "showtimes"
+        ],
+        "showtimes": [
+          {
+            "endTime": "2026-09-15T12:25:00-04:00",
+            "startTime": "2026-09-15T12:25:00-04:00",
+            "type": "Performance Time"
+          },
+          {
+            "endTime": "2026-09-15T13:45:00-04:00",
+            "startTime": "2026-09-15T13:45:00-04:00",
+            "type": "Performance Time"
+          },
+          {
+            "endTime": "2026-09-15T14:45:00-04:00",
+            "startTime": "2026-09-15T14:45:00-04:00",
+            "type": "Performance Time"
+          },
+          {
+            "endTime": "2026-09-15T15:45:00-04:00",
+            "startTime": "2026-09-15T15:45:00-04:00",
+            "type": "Performance Time"
+          }
+        ],
+        "status": "OPERATING",
+        "time": "2026-09-15T15:25:57Z"
+      }
+    ],
+    "id": "fa701040-b46a-4291-afb9-b8dc2c8e9a16",
+    "name": "\u00a1Vamos! \u2013 B\u00e1ilalo",
+    "next": null,
+    "opening": {
+      "showtimes": [],
+      "status": "CLOSED",
+      "time": "2026-09-15T04:00:00Z"
+    },
+    "parentId": "eb3f4560-2383-4a36-9152-6b3e5ed6bc57",
+    "range": {
+      "from": "2026-09-15",
+      "to": "2026-09-15"
+    },
+    "timezone": "America/New_York"
+  }
+}

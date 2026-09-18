@@ -37,6 +37,71 @@ const liveData: LiveData = {
 };
 ```
 
+### History types
+
+One thing to know before using these: **two of the history paths return a
+different shape for a park than for anything else.** `GET /v1/entity/{id}/history`
+answers a single entity with `HistoryEnvelope`, and a `PARK` with
+`HistoryParkRawEnvelope` — every entity of that park in one response. The same
+split applies to `.../history/daily`. Branch on `entityType`, or on the presence
+of `entities`:
+
+```typescript
+import type { HistoryEnvelope, HistoryParkRawEnvelope } from '@themeparks/typelib';
+
+type HistoryResponse = HistoryEnvelope | HistoryParkRawEnvelope;
+
+function rowsFor(res: HistoryResponse) {
+    return 'entities' in res
+        ? res.entities.flatMap((e) => e.history)
+        : res.history;
+}
+```
+
+A history row is the **complete** live-data state at that instant, not just the
+part that moved — `changed` lists which leaf paths differ from the row before,
+and every other key is carried forward. So a row reads exactly like a
+`GET /v1/entity/{id}/live` response:
+
+```typescript
+import type { HistoryRow } from '@themeparks/typelib';
+
+const row: HistoryRow = {
+    time: '2026-09-15T09:43:15Z',
+    changed: ['queue.STANDBY.waitTime'],
+    status: 'OPERATING',
+    queue: { STANDBY: { waitTime: 25 } },
+};
+```
+
+Daily summaries leave a block **absent** rather than null when there is nothing
+to report, because "no wait was recorded" and "the wait was zero" are different
+claims:
+
+```typescript
+import type { HistoryDailyRow } from '@themeparks/typelib';
+
+function medianWait(day: HistoryDailyRow): number | undefined {
+    return day.standby?.p50;
+}
+```
+
+Errors are discriminated by `error.type`, each pinned to a literal, so a switch
+over them is checked for exhaustiveness:
+
+```typescript
+import type { HistoryErrorRangeTooLong, HistoryErrorWindowExceeded } from '@themeparks/typelib';
+
+type HistoryError = HistoryErrorRangeTooLong | HistoryErrorWindowExceeded;
+
+function explain(err: HistoryError): string {
+    switch (err.error.type) {
+        case 'RANGE_TOO_LONG': return 'Ask for a shorter range.';
+        case 'HISTORY_WINDOW_EXCEEDED': return `History starts at ${err.error.earliestAllowedDate}.`;
+    }
+}
+```
+
 ### Enums and conversion functions
 
 ```typescript
