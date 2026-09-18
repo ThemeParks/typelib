@@ -47,3 +47,45 @@ describe('jsr.json exports', () => {
         expect(jsr.publish.exclude).toContain('src/__tests__');
     });
 });
+
+describe('provenance metadata', () => {
+    // `npm publish --provenance` asks sigstore to attest WHICH repository built
+    // the tarball, and the registry then refuses the upload unless
+    // package.json's own `repository.url` agrees with that attestation.
+    //
+    // package.json had no `repository` field at all, so the first real release
+    // failed after signing:
+    //
+    //   422 Unprocessable Entity - PUT .../@themeparks%2ftypelib
+    //   Error verifying sigstore provenance bundle: Failed to validate
+    //   repository information: package.json: "repository.url" is "",
+    //   expected to match "https://github.com/ThemeParks/typelib"
+    //
+    // Nothing could have caught that before a tag push: every other guard in
+    // release.yml runs against the tree, and this one is enforced by the
+    // registry at the moment of upload. Hence a test, so the next person finds
+    // out from a red suite rather than from a half-finished release.
+
+    it('names the repository, which provenance verification requires', () => {
+        expect(pkg.repository).toBeDefined();
+        expect(pkg.repository.url, 'an empty url is what failed the release').toBeTruthy();
+    });
+
+    it('names the repository provenance will actually attest', () => {
+        // The registry compares against the GitHub repo the workflow ran in.
+        // Any other value — a fork, a renamed org, a typo — fails the same way,
+        // so the expected string is written out rather than derived.
+        const url: string = pkg.repository.url;
+        const normalised = url.replace(/^git\+/, '').replace(/\.git$/, '');
+
+        expect(normalised).toBe('https://github.com/ThemeParks/typelib');
+    });
+
+    it('uses a form npm can normalise', () => {
+        // npm accepts shorthand ("github:owner/repo") but the registry compares
+        // the normalised https form. An explicit git+https url leaves nothing
+        // to interpretation.
+        expect(pkg.repository.type).toBe('git');
+        expect(pkg.repository.url).toMatch(/^git\+https:\/\//);
+    });
+});
