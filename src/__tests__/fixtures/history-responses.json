@@ -249,6 +249,12 @@
       "type": "INVALID_DATE"
     }
   },
+  "error-invalid-range": {
+    "error": {
+      "message": "to must not be before from.",
+      "type": "INVALID_RANGE"
+    }
+  },
   "error-not-found": {
     "error": {
       "message": "Entity not found",
@@ -563,6 +569,418 @@
     "name": "Magic Kingdom Park",
     "next": null,
     "parentId": "e957da41-3552-4cf6-b636-5babc5cbc4e5",
+    "range": {
+      "from": "2026-09-15",
+      "to": "2026-09-15"
+    },
+    "timezone": "America/New_York"
+  },
+  "queue-paid-return-time": {
+    "coverage": {
+      "firstRecordedAt": "2021-07-03"
+    },
+    "destinationId": "89db5d43-c434-4097-b71f-f6869f495a22",
+    "entityType": "ATTRACTION",
+    "history": [
+      {
+        "changed": [
+          "status",
+          "queue.STANDBY.waitTime"
+        ],
+        "queue": {
+          "PAID_RETURN_TIME": {
+            "price": null,
+            "returnEnd": null,
+            "returnStart": null,
+            "state": null
+          },
+          "RETURN_TIME": {
+            "returnEnd": null,
+            "returnStart": null,
+            "state": null
+          },
+          "STANDBY": {
+            "waitTime": 20
+          }
+        },
+        "status": "OPERATING",
+        "time": "2026-09-15T15:03:22Z"
+      },
+      {
+        "changed": [
+          "queue.STANDBY.waitTime"
+        ],
+        "queue": {
+          "PAID_RETURN_TIME": {
+            "price": null,
+            "returnEnd": null,
+            "returnStart": null,
+            "state": null
+          },
+          "RETURN_TIME": {
+            "returnEnd": null,
+            "returnStart": null,
+            "state": null
+          },
+          "STANDBY": {
+            "waitTime": 15
+          }
+        },
+        "status": "OPERATING",
+        "time": "2026-09-15T15:12:53Z"
+      },
+      {
+        "changed": [
+          "queue.RETURN_TIME.state"
+        ],
+        "queue": {
+          "PAID_RETURN_TIME": {
+            "price": null,
+            "returnEnd": null,
+            "returnStart": null,
+            "state": null
+          },
+          "RETURN_TIME": {
+            "returnEnd": null,
+            "returnStart": null,
+            "state": "TEMP_FULL"
+          },
+          "STANDBY": {
+            "waitTime": 15
+          }
+        },
+        "status": "OPERATING",
+        "time": "2026-09-15T15:17:08Z"
+      },
+      {
+        "changed": [
+          "queue.STANDBY.waitTime"
+        ],
+        "queue": {
+          "PAID_RETURN_TIME": {
+            "price": null,
+            "returnEnd": null,
+            "returnStart": null,
+            "state": null
+          },
+          "RETURN_TIME": {
+            "returnEnd": null,
+            "returnStart": null,
+            "state": "TEMP_FULL"
+          },
+          "STANDBY": {
+            "waitTime": 45
+          }
+        },
+        "status": "OPERATING",
+        "time": "2026-09-15T15:53:51Z"
+      }
+    ],
+    "id": "1e16afdd-15e3-4e4a-b3af-8aeebd7534f8",
+    "name": "E.T. Adventure",
+    "next": null,
+    "opening": {
+      "queue": {
+        "PAID_RETURN_TIME": {
+          "price": null,
+          "returnEnd": null,
+          "returnStart": null,
+          "state": null
+        },
+        "RETURN_TIME": {
+          "returnEnd": null,
+          "returnStart": null,
+          "state": null
+        },
+        "STANDBY": {
+          "waitTime": null
+        }
+      },
+      "status": "CLOSED",
+      "time": "2026-09-15T04:00:00Z"
+    },
+    "parentId": "eb3f4560-2383-4a36-9152-6b3e5ed6bc57",
+    "range": {
+      "from": "2026-09-15",
+      "to": "2026-09-15"
+    },
+    "timezone": "America/New_York"
+  },
+  "queue-paid-standby": {
+    "coverage": {
+      "firstRecordedAt": "2026-08-24"
+    },
+    "destinationId": "89db5d43-c434-4097-b71f-f6869f495a22",
+    "entityType": "ATTRACTION",
+    "history": [],
+    "id": "41c4491c-f3d9-41e5-963c-21a10a255b39",
+    "name": "Cybergoria",
+    "next": null,
+    "opening": {
+      "queue": {
+        "PAID_STANDBY": {
+          "waitTime": null
+        }
+      },
+      "status": "CLOSED",
+      "time": "2026-09-15T04:00:00Z"
+    },
+    "parentId": "eb3f4560-2383-4a36-9152-6b3e5ed6bc57",
+    "range": {
+      "from": "2026-09-15",
+      "to": "2026-09-15"
+    },
+    "timezone": "America/New_York"
+  },
+  "queue-single-rider": {
+    "coverage": {
+      "firstRecordedAt": "2021-07-03"
+    },
+    "destinationId": "89db5d43-c434-4097-b71f-f6869f495a22",
+    "entityType": "ATTRACTION",
+    "history": [
+      {
+        "changed": [
+          "status",
+          "queue.STANDBY.waitTime"
+        ],
+        "queue": {
+          "SINGLE_RIDER": {
+            "waitTime": null
+          },
+          "STANDBY": {
+            "waitTime": 15
+          }
+        },
+        "status": "OPERATING",
+        "time": "2026-09-15T14:04:13Z"
+      },
+      {
+        "changed": [
+          "queue.STANDBY.waitTime"
+        ],
+        "queue": {
+          "SINGLE_RIDER": {
+            "waitTime": null
+          },
+          "STANDBY": {
+            "waitTime": 25
+          }
+        },
+        "status": "OPERATING",
+        "time": "2026-09-15T14:43:07Z"
+      },
+      {
+        "changed": [
+          "queue.STANDBY.waitTime"
+        ],
+        "queue": {
+          "SINGLE_RIDER": {
+            "waitTime": null
+          },
+          "STANDBY": {
+            "waitTime": 35
+          }
+        },
+        "status": "OPERATING",
+        "time": "2026-09-15T14:48:17Z"
+      },
+      {
+        "changed": [
+          "queue.STANDBY.waitTime"
+        ],
+        "queue": {
+          "SINGLE_RIDER": {
+            "waitTime": null
+          },
+          "STANDBY": {
+            "waitTime": 45
+          }
+        },
+        "status": "OPERATING",
+        "time": "2026-09-15T15:13:15Z"
+      }
+    ],
+    "id": "70ac72a3-9675-4c41-a1b1-e4801072927a",
+    "name": "Harry Potter and the Escape from Gringotts\u2122",
+    "next": null,
+    "opening": {
+      "queue": {
+        "SINGLE_RIDER": {
+          "waitTime": null
+        },
+        "STANDBY": {
+          "waitTime": null
+        }
+      },
+      "status": "CLOSED",
+      "time": "2026-09-15T04:00:00Z"
+    },
+    "parentId": "eb3f4560-2383-4a36-9152-6b3e5ed6bc57",
+    "range": {
+      "from": "2026-09-15",
+      "to": "2026-09-15"
+    },
+    "timezone": "America/New_York"
+  },
+  "showtimes": {
+    "coverage": {
+      "firstRecordedAt": "2026-05-25"
+    },
+    "destinationId": "89db5d43-c434-4097-b71f-f6869f495a22",
+    "entityType": "SHOW",
+    "history": [
+      {
+        "changed": [
+          "showtimes"
+        ],
+        "showtimes": [
+          {
+            "endTime": "2026-09-15T10:25:00-04:00",
+            "startTime": "2026-09-15T10:25:00-04:00",
+            "type": "Performance Time"
+          },
+          {
+            "endTime": "2026-09-15T11:25:00-04:00",
+            "startTime": "2026-09-15T11:25:00-04:00",
+            "type": "Performance Time"
+          },
+          {
+            "endTime": "2026-09-15T12:25:00-04:00",
+            "startTime": "2026-09-15T12:25:00-04:00",
+            "type": "Performance Time"
+          },
+          {
+            "endTime": "2026-09-15T13:45:00-04:00",
+            "startTime": "2026-09-15T13:45:00-04:00",
+            "type": "Performance Time"
+          },
+          {
+            "endTime": "2026-09-15T14:45:00-04:00",
+            "startTime": "2026-09-15T14:45:00-04:00",
+            "type": "Performance Time"
+          },
+          {
+            "endTime": "2026-09-15T15:45:00-04:00",
+            "startTime": "2026-09-15T15:45:00-04:00",
+            "type": "Performance Time"
+          }
+        ],
+        "status": "CLOSED",
+        "time": "2026-09-15T10:17:35Z"
+      },
+      {
+        "changed": [
+          "status"
+        ],
+        "showtimes": [
+          {
+            "endTime": "2026-09-15T10:25:00-04:00",
+            "startTime": "2026-09-15T10:25:00-04:00",
+            "type": "Performance Time"
+          },
+          {
+            "endTime": "2026-09-15T11:25:00-04:00",
+            "startTime": "2026-09-15T11:25:00-04:00",
+            "type": "Performance Time"
+          },
+          {
+            "endTime": "2026-09-15T12:25:00-04:00",
+            "startTime": "2026-09-15T12:25:00-04:00",
+            "type": "Performance Time"
+          },
+          {
+            "endTime": "2026-09-15T13:45:00-04:00",
+            "startTime": "2026-09-15T13:45:00-04:00",
+            "type": "Performance Time"
+          },
+          {
+            "endTime": "2026-09-15T14:45:00-04:00",
+            "startTime": "2026-09-15T14:45:00-04:00",
+            "type": "Performance Time"
+          },
+          {
+            "endTime": "2026-09-15T15:45:00-04:00",
+            "startTime": "2026-09-15T15:45:00-04:00",
+            "type": "Performance Time"
+          }
+        ],
+        "status": "OPERATING",
+        "time": "2026-09-15T14:00:47Z"
+      },
+      {
+        "changed": [
+          "showtimes"
+        ],
+        "showtimes": [
+          {
+            "endTime": "2026-09-15T11:25:00-04:00",
+            "startTime": "2026-09-15T11:25:00-04:00",
+            "type": "Performance Time"
+          },
+          {
+            "endTime": "2026-09-15T12:25:00-04:00",
+            "startTime": "2026-09-15T12:25:00-04:00",
+            "type": "Performance Time"
+          },
+          {
+            "endTime": "2026-09-15T13:45:00-04:00",
+            "startTime": "2026-09-15T13:45:00-04:00",
+            "type": "Performance Time"
+          },
+          {
+            "endTime": "2026-09-15T14:45:00-04:00",
+            "startTime": "2026-09-15T14:45:00-04:00",
+            "type": "Performance Time"
+          },
+          {
+            "endTime": "2026-09-15T15:45:00-04:00",
+            "startTime": "2026-09-15T15:45:00-04:00",
+            "type": "Performance Time"
+          }
+        ],
+        "status": "OPERATING",
+        "time": "2026-09-15T14:25:50Z"
+      },
+      {
+        "changed": [
+          "showtimes"
+        ],
+        "showtimes": [
+          {
+            "endTime": "2026-09-15T12:25:00-04:00",
+            "startTime": "2026-09-15T12:25:00-04:00",
+            "type": "Performance Time"
+          },
+          {
+            "endTime": "2026-09-15T13:45:00-04:00",
+            "startTime": "2026-09-15T13:45:00-04:00",
+            "type": "Performance Time"
+          },
+          {
+            "endTime": "2026-09-15T14:45:00-04:00",
+            "startTime": "2026-09-15T14:45:00-04:00",
+            "type": "Performance Time"
+          },
+          {
+            "endTime": "2026-09-15T15:45:00-04:00",
+            "startTime": "2026-09-15T15:45:00-04:00",
+            "type": "Performance Time"
+          }
+        ],
+        "status": "OPERATING",
+        "time": "2026-09-15T15:25:57Z"
+      }
+    ],
+    "id": "fa701040-b46a-4291-afb9-b8dc2c8e9a16",
+    "name": "\u00a1Vamos! \u2013 B\u00e1ilalo",
+    "next": null,
+    "opening": {
+      "showtimes": [],
+      "status": "CLOSED",
+      "time": "2026-09-15T04:00:00Z"
+    },
+    "parentId": "eb3f4560-2383-4a36-9152-6b3e5ed6bc57",
     "range": {
       "from": "2026-09-15",
       "to": "2026-09-15"
